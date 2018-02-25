@@ -1,0 +1,4 @@
+*.o
+TEAscus
+TEAscus_test
+include/gitversion.h
