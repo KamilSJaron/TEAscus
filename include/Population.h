@@ -37,7 +37,7 @@ public:
 	void DeleteIndividual(int);
 	Population * SexualReproduction();
 	Population * AsexualReproduction();
-	void TranspositionAndLoss();
+	void TranspositionAndLoss(bool);
 
 	void ListPopulationSites() const;
 	void SaveParameters(const char *);

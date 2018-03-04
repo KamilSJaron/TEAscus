@@ -140,7 +140,7 @@ int main(int argc, char **argv){
 
 		for (int gen = 1; gen <= burnin; gen++){
 			// cerr << "Runnin burnin" << endl;
-			pop->TranspositionAndLoss();
+			pop->TranspositionAndLoss(te_mutation);
 		}
 
 		pop->SummaryStatistics(detailed_out, 0);
@@ -168,7 +168,7 @@ int main(int argc, char **argv){
 
 			// cerr << "Transposing " << endl;
 			// TRANSPOSITION & LOSS
-			pop->TranspositionAndLoss();
+			pop->TranspositionAndLoss(te_mutation);
 
 			/// printing results after transposition
 			cerr << ".";

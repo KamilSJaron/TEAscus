@@ -204,7 +204,7 @@ void Genome::SetChromosome(Chromosome & c) {
 	chromoVector.at(num - 1) = c;
 }
 
-void Genome::Transpose() {
+void Genome::Transpose(bool te_mutation) {
 	// std::cerr << "Transposing" << std::endl;
 	int rolled_chromosome = 0, rolled_position_on_ch = 0;
 	unsigned int transposeCount = 0;
@@ -249,7 +249,9 @@ void Genome::Transpose() {
 
 				// std::cerr << "position rolled" << std::endl;
 				// roll for TE adjustment
-				transposition_rate = transposition_rate * rnorm(mt);
+				if (te_mutation){
+					transposition_rate = transposition_rate * rnorm(mt);
+				}
 
 				// // is new TE going to affect fitness
 				// if (faf > rand.Uniform())

@@ -207,10 +207,10 @@ Population * Population::AsexualReproduction() {
 	return newPopulation;
 }
 
-void Population::TranspositionAndLoss()
+void Population::TranspositionAndLoss(bool te_mutation)
 {
 	for (int i=0; i < popSize; i++) {
-		genoVector.at(i).Transpose();
+		genoVector.at(i).Transpose(te_mutation);
 		genoVector.at(i).ElementLoss();
 	}
 }

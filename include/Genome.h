@@ -40,8 +40,7 @@ public:
 
 	void SetChromosome(Chromosome&);
 
-	void Transpose();
-	void Transpose(double, double);
+	void Transpose(bool);
 	void ElementLoss();
 	void Recombination();
 	//Ascus MakeAscus();
