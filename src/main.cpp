@@ -22,7 +22,9 @@ int main(int argc, char **argv){
 	const char *detailed_out = "detailed.txt";
 	const char *input_file = "input.txt";
 	bool sex = false, te_mutation = false;
+	std::vector<std::pair<int,int>> initial_TEs;
 	string runnig_sex = "False", runnig_te_mutation = "False";
+	std::pair<int, int> TEs;
 
 	int replicates = 10;
 	int generations = 990;
@@ -130,8 +132,20 @@ int main(int argc, char **argv){
 
 		int size = pop->GetPopSize();
 		// cerr << "Population size : " << size << endl;
-		pop->Initialize();
+		pop->Initialize(initial_TEs);
 		// cerr << "Population initiated" << endl;
+
+		// sort initial TEs
+		std::sort(initial_TEs.begin(), initial_TEs.end(),
+			[](const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) {
+				if (lhs.first == rhs.first) {
+					return lhs.second < rhs.second;
+				} else {
+					return lhs.first < rhs.first;
+				}
+			}
+		);
+
 		pop->SaveParameters(detailed_out);
 
 		if (run==1) {
@@ -143,15 +157,15 @@ int main(int argc, char **argv){
 			pop->TranspositionAndLoss(te_mutation);
 		}
 
-		pop->SummaryStatistics(detailed_out, 0);
+		pop->SummaryStatistics(detailed_out, 0, initial_TEs);
 
 		for (int gen = 1; gen <= generations; gen++) {
 			// cerr << "Running generation " << gen << "." << endl;
-
-			if (pop->GetPopulationTECount() == 0 or ((double)pop->GetPopulationTECount()/(double)size) > 150.0) {
+			TEs = pop->GetPopulationTECount(initial_TEs);
+			if (TEs.first == 0 or ((double)TEs.first/(double)size) > 150.0) {
 				// cerr << "No TEs at generation [" << gen << "]." << endl << endl;
 				// cerr << "Population extinction at generation [" << gen << "]." << endl << endl;
-				pop->SummaryStatistics(detailed_out, gen);
+				pop->SummaryStatistics(detailed_out, gen, initial_TEs);
 				break;
 			}
 
@@ -174,7 +188,7 @@ int main(int argc, char **argv){
 			cerr << ".";
 			if (gen % sex_report_period == 0) {
 				cerr << endl;
-				pop->SummaryStatistics(detailed_out, gen);
+				pop->SummaryStatistics(detailed_out, gen, initial_TEs);
 			}
 		}
 

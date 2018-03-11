@@ -135,6 +135,15 @@ int Genome::GenerateTossACoin(){
 	// 	return(false);
 }
 
+std::pair<int, int> Genome::GetGenomeTECount(std::vector<std::pair<int,int>>& initial_TEs) const {
+	// TODO make it work
+	unsigned int genomeTEcount = 0, genomeReferenceTEcount = 0;
+	for (int i=1; i <= numberOfChromosomes; i++) {
+		genomeTEcount += GetChromosome(i).GetChromTECount();
+	}
+	return std::pair<int, int>(genomeTEcount, genomeReferenceTEcount);
+}
+
 unsigned int Genome::GetGenomeTECount() const {
 	unsigned int genomeTEcount = 0;
 	for (int i=1; i <= numberOfChromosomes; i++) {

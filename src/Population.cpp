@@ -47,12 +47,15 @@ int Population::GetPopSize() const
 	return popSize;
 }
 
-unsigned int Population::GetPopulationTECount() const
+std::pair<int, int> Population::GetPopulationTECount(std::vector<std::pair<int,int>>& initial_TEs) const
 {
-	unsigned int populationTEcount = 0;
+	int populationTEcount = 0, populationRefTEcount = 0;
+	std::pair<int, int> TEs;
 	for (int i=0; i < popSize; i++)
-		populationTEcount += GetIndividual(i).GetGenomeTECount();
-	return populationTEcount;
+		TEs = GetIndividual(i).GetGenomeTECount(initial_TEs);
+		populationTEcount += TEs.first;
+		populationRefTEcount += TEs.second;
+	return std::pair<int, int>(populationTEcount, populationTEcount);
 }
 
 unsigned int Population::GetPopulationTECountAffectingFitness() const
@@ -112,7 +115,7 @@ double Population::GetVarU(double mean_u) const {
 	return(var_u);
 }
 
-void Population::Initialize() {
+void Population::Initialize(std::vector<std::pair<int,int>>& initial_TEs) {
 	int rolled_chromosome = 0, rolled_position_on_ch = 0;
 	int totalLength = Genome::chromLength * Genome::numberOfChromosomes;
 
@@ -130,6 +133,7 @@ void Population::Initialize() {
 			Genome::GenerateChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
 		} while (!GetIndividual(0).GetChromosome(rolled_chromosome).TestEmpty(rolled_position_on_ch));
 
+		initial_TEs.push_back(std::make_pair(rolled_chromosome, rolled_position_on_ch));
 		GetIndividual(0).GetChromosome(rolled_chromosome).Insert(Transposon(rolled_position_on_ch, Genome::u_initial, true));
 	}
 
@@ -265,12 +269,13 @@ void Population::PrintParameters(){
 }
 
 // Statisitics for entire genome
-void Population::SummaryStatistics(const char * fileName, int generation)
+void Population::SummaryStatistics(const char * fileName, int generation, std::vector<std::pair<int,int>>& initial_TEs)
 {
 	std::ofstream fout(fileName,std::ios::app);
 
 	// to determine mean and variance of copy number per individual
-	double meanCopyNumber=0.0, varCopyNumber=0.0, x=0.0;
+	double meanCopyNumber=0.0, meanReferenceCopyNumber=0.0, varCopyNumber=0.0, x=0.0;
+	std::pair<int, int> TEs;
 	double proportionAffectingW=0.0;
 	double mean_u = 0.0, var_u = 0.0;
 	int chromLength=0, vectorLength=0, y=0;
@@ -284,12 +289,14 @@ void Population::SummaryStatistics(const char * fileName, int generation)
 
 	std::vector<int> locationVector(vectorLength, 0);
 
-	meanCopyNumber = ((double)GetPopulationTECount()) / ((double)size);
+	TEs = GetPopulationTECount(initial_TEs);
+	meanCopyNumber = ((double)TEs.first) / ((double)size);
+	meanReferenceCopyNumber = ((double)TEs.second) / ((double)size);
 	mean_u = GetMeanU();
 	var_u = GetVarU(mean_u);
 
 	if (meanCopyNumber != 0)
-		proportionAffectingW = ((double)GetPopulationTECountAffectingFitness()) / ((double)GetPopulationTECount());
+		proportionAffectingW = ((double)GetPopulationTECountAffectingFitness()) / ((double)TEs.first);
 	minCopyNum = (int)meanCopyNumber + 1;
 
 	for (int i=0; i < size; i++) {

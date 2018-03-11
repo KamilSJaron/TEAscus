@@ -30,6 +30,7 @@ public:
 	static void GenerateChromosomeAndPosition(int * ch, int * p);
 	static int GenerateTossACoin();
 
+	std::pair<int, int> GetGenomeTECount(std::vector<std::pair<int,int>>&) const;
 	unsigned int GetGenomeTECount() const;
 	unsigned int GetGenomeTECountAffectingFitness() const;
 	const Chromosome & GetChromosome(int) const;

@@ -25,13 +25,13 @@ public:
 	Genome & GetIndividual(int);
 	const Genome & GetIndividual(int) const;
 	int GetPopSize() const;
-	unsigned int GetPopulationTECount() const;
+	std::pair<int, int> GetPopulationTECount(std::vector<std::pair<int,int>>&) const;
 	unsigned int GetPopulationTECountAffectingFitness() const;
 	double GetPopulationMeanFitness() const;
 	double GetMeanU() const;
 	double GetVarU(double mean_u) const;
 
-	void Initialize();
+	void Initialize(std::vector<std::pair<int,int>>&);
 	int SelectVitalIndividual();
 	Genome MakeIndividual();
 	void DeleteIndividual(int);
@@ -42,7 +42,7 @@ public:
 	void ListPopulationSites() const;
 	void SaveParameters(const char *);
 	void PrintParameters();
-	void SummaryStatistics(const char *, int);
+	void SummaryStatistics(const char *, int, std::vector<std::pair<int,int>>&);
 	void RecordPopulation(const char *, int);
 
 	void SummaryStatistics(int);

@@ -10,8 +10,9 @@ using namespace CppUnit;
 using namespace std;
 
 void TestPopulation::setUp(void) {
+	vector<pair<int,int>> initial_TEs;
 	pop = new Population(20);
-	pop->Initialize();
+	pop->Initialize(initial_TEs);
 }
 
 void TestPopulation::tearDown(void) {
