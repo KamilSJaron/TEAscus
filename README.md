@@ -16,11 +16,24 @@ default installation location is `INSTAL_PREFIX=/usr/local` and `make` always ad
 
 ### Usage
 
+most of parameters are read form an input file `input.txt`.
+
 ```
-TEAscus [--version] [--help] [--sex]
+Usage:
+         TEAscus [options]
+Options:
+         [-h]            print help of TEAscus and die
+         [-v]            print version of TEAscus and die
+         [-s]            sex every [-p] generations (False)
+         [-g]    INT     number of generations (990)
+         [-b]    INT     number of burn-in generations before simumlation (20)
+         [-r]    INT     number of replicates (10)
+         [-p]    INT     period of saves and sex if -s option is set (90)
+         [-i]    FILE    name of input file (input.txt)
+         [-o]    FILE    name of output file (detailed.txt)
 ```
 
-where `--sex` cause a sexual generation every 90 generations. Few parameters are hardcoded (number of chromosomes, number of loci, recombination rates in `src/Genome.cpp`, number of generations, number of replicates and frequency of sex / output in `src/main.cpp`)
+Few parameters are still hardcoded in`src/Genome.cpp` : number of chromosomes, number of loci, recombination rates.
 
 The rest of parameters are loaded from file `input.txt`
 
