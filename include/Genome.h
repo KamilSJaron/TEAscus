@@ -31,16 +31,14 @@ public:
 	static int GenerateTossACoin();
 
 	unsigned int GetGenomeTECount() const;
-	unsigned int GetGenomeTECountAffectingFitness() const;
 	const Chromosome & GetChromosome(int) const;
 	Chromosome & GetChromosome(int);
 	double GetGenomeFitness() const;
 	double GetGenomeFitness(int) const;
-	double GetMeanU() const;
 
 	void SetChromosome(Chromosome&);
 
-	void Transpose(bool);
+	void Transpose();
 	void ElementLoss();
 	void Recombination();
 	//Ascus MakeAscus();
@@ -55,7 +53,7 @@ public:
 //	static int N;					// Population size
 	static double sa;				// selection coefficient alpha under synergistic epistasis
 	static double sb;				// selection coefficient beta under synergistic epistasis
-	static double u_initial;				// transposition rate
+	static double u;				// transposition rate
 	static double vt;				// rate of element loss
 	static double faf;			// fraction affecting fitness (FAF)
 	//static double rGenome;		// genome wide recombination rate between TE sites
@@ -69,7 +67,6 @@ private:
 
 	static std::random_device rd;
 	static std::mt19937 mt;
-	static std::normal_distribution<double> rnorm;
 	static std::uniform_int_distribution<int> rgap;
 	static std::uniform_int_distribution<int> rpos;
 	static std::uniform_int_distribution<int> toss;

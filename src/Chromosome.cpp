@@ -49,38 +49,6 @@ unsigned int Chromosome::GetChromTECount() const
 	return count;
 }
 
-unsigned int Chromosome::GetChromTECountAffectingFitness() const
-{
-	unsigned int count = 0;
-	Locus * current = headLocus;
-	while (current != 0)
-	{
-		if (current->GetTransposon().GetEffect())
-			count++;
-		current = current->GetNext();
-	}
-	return count;
-}
-
-double Chromosome::GetMeanU() const {
-	double mean_u = 0.0;
-	int count = 0;
-	Locus * current = headLocus;
-
-	while (current != 0) {
-		mean_u += current->GetTransposon().GetTranspositionRate();
-		count++;
-		current = current->GetNext();
-	}
-
-	if (count == 0) {
-		return -1;
-	}
-
-	mean_u /= (double)count;
-	return(mean_u);
-}
-
 unsigned int Chromosome::GetChromNumber() const
 {
 	return chromNumber;
@@ -125,21 +93,20 @@ bool Chromosome::TestEmpty(int site) const
 {
 	Locus * current = headLocus;
 
-	while ((current != 0) && (current->GetTransposon().GetLocation() < site))
+	while ((current != 0) && (current->GetPosition() < site))
 		current = current->GetNext();
 
 	if (current == 0)
 		return true;
-	if (current->GetTransposon().GetLocation() == site)
+	if (current->GetPosition() == site)
 		return false;
 	else
 		return true;
 }
 
-void Chromosome::Insert (Transposon te)
+void Chromosome::Insert (int location)
 {
-	Locus * newLocus = new Locus (te);
-	int newLocation = te.GetLocation();
+	Locus * newLocus = new Locus (location);
 
 	if (headLocus == 0)
 	{
@@ -148,7 +115,7 @@ void Chromosome::Insert (Transposon te)
 	}
 
 	// if the new inserted locus is upstream of head, then make it the new head
-	if (headLocus->GetTransposon().GetLocation() > newLocation)
+	if (headLocus->GetPosition() > location)
 	{
 		newLocus->SetNext(headLocus);
 		headLocus = newLocus;
@@ -170,10 +137,10 @@ void Chromosome::Insert (Transposon te)
 		}
 
 		nextLocus = currentLocus->GetNext();
-		nextLocation = nextLocus->GetTransposon().GetLocation();
+		nextLocation = nextLocus->GetPosition();
 		// std::cerr << nextLocation << std::endl;
 
-		if (nextLocation > newLocation)
+		if (nextLocation > location)
 		{
 			currentLocus->SetNext(newLocus);
 			newLocus->SetNext(nextLocus);

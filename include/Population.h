@@ -26,10 +26,7 @@ public:
 	const Genome & GetIndividual(int) const;
 	int GetPopSize() const;
 	unsigned int GetPopulationTECount() const;
-	unsigned int GetPopulationTECountAffectingFitness() const;
 	double GetPopulationMeanFitness() const;
-	double GetMeanU() const;
-	double GetVarU(double mean_u) const;
 
 	void Initialize();
 	int SelectVitalIndividual();
@@ -37,7 +34,7 @@ public:
 	void DeleteIndividual(int);
 	Population * SexualReproduction();
 	Population * AsexualReproduction();
-	void TranspositionAndLoss(bool);
+	void TranspositionAndLoss();
 
 	void ListPopulationSites() const;
 	void SaveParameters(const char *);

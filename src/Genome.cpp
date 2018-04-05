@@ -18,10 +18,9 @@
 
 #define CHROMOSOMES 16
 #define CHROM_LENGTH 500
-#define TE_MUTATION_SD 0.1
 
 //int Genome::N = 0;
-double Genome::u_initial = 0;
+double Genome::u = 0;
 double Genome::vt = 0;
 double Genome::sa = 0;
 double Genome::sb = 0;
@@ -30,7 +29,6 @@ int Genome::initialTE = 0;
 
 std::random_device Genome::rd;
 std::mt19937 Genome::mt(Genome::rd());
-std::normal_distribution<double> Genome::rnorm(1, TE_MUTATION_SD);
 std::uniform_int_distribution<int> Genome::rgap(0, CHROM_LENGTH);
 std::uniform_int_distribution<int> Genome::rpos(1, CHROM_LENGTH);
 std::uniform_int_distribution<int> Genome::rch(1, CHROMOSOMES);
@@ -56,7 +54,7 @@ void Genome::SetParameters() {
 		// fin.getline(tempChar,100); /// its read somewhere else
 	//	N=strtol(tempChar,0,10);
 		fin.getline(tempChar,100);
-		u_initial=strtod(tempChar,0);
+		u=strtod(tempChar,0);
 		fin.getline(tempChar,100);
 		vt=strtod(tempChar,0);
 		fin.getline(tempChar,100);
@@ -96,7 +94,7 @@ Genome::Genome(const Genome & rhs) {
 		chromoVector.at(i-1).SetChromLengthAndRecRate(chromLength, chromRecRates[i-1]);
 		current = rhs.GetChromosome(i).GetHeadLocus();
 		while (current != 0) {
-			chromoVector.at(i-1).Insert(current->GetTransposon());
+			chromoVector.at(i-1).Insert(current->GetPosition());
 			current = current->GetNext();
 		}
 	}
@@ -143,14 +141,6 @@ unsigned int Genome::GetGenomeTECount() const {
 	return genomeTEcount;
 }
 
-unsigned int Genome::GetGenomeTECountAffectingFitness() const {
-	unsigned int genomeTEcount = 0;
-	for (int i=1; i <= numberOfChromosomes; i++) {
-		genomeTEcount += GetChromosome(i).GetChromTECountAffectingFitness();
-	}
-	return genomeTEcount;
-}
-
 // input is chromosome number and copy number
 const Chromosome & Genome::GetChromosome(int num) const {
 		return chromoVector.at(num - 1);
@@ -162,7 +152,7 @@ Chromosome & Genome::GetChromosome(int num) {
 
 double Genome::GetGenomeFitness() const
 {
-	unsigned int genomeTEcount = GetGenomeTECountAffectingFitness();
+	unsigned int genomeTEcount = GetGenomeTECount();
 
 	//return (1 - 0.001*pow(genomeTEcount, 1.5));
 
@@ -178,33 +168,13 @@ double Genome::GetGenomeFitness(int meanCount) const {
 	return exp ( -(sa * meanCount) - (0.5 * sb * pow(meanCount,2) ) );
 }
 
-double Genome::GetMeanU() const{
-	double mean_u = 0.0, ch_mean_u = 0.0;
-	int ch_with_TEs = 0;
-	for (int i=1; i <= numberOfChromosomes; i++) {
-		ch_mean_u = GetChromosome(i).GetMeanU();
-		if (ch_mean_u != -1) {
-			mean_u += ch_mean_u;
-			ch_with_TEs++;
-		}
-	}
-
-	if(ch_with_TEs == 0){
-		return -1;
-	}
-
-	mean_u /= (double)ch_with_TEs;
-	return mean_u;
-}
-
-
 void Genome::SetChromosome(Chromosome & c) {
 	int num = c.GetChromNumber();
 
 	chromoVector.at(num - 1) = c;
 }
 
-void Genome::Transpose(bool te_mutation) {
+void Genome::Transpose() {
 	// std::cerr << "Transposing" << std::endl;
 	int rolled_chromosome = 0, rolled_position_on_ch = 0;
 	unsigned int transposeCount = 0;
@@ -215,8 +185,7 @@ void Genome::Transpose(bool te_mutation) {
 	// std::cerr << "Proportion of gneome covered by TEs : " << TEs / (double)totalLength << std::endl;
 
 	Locus * current;
-	double transposition_rate = 0;
-	bool affectW = true, roll_again = true;
+	bool roll_again = true;
 	// std::cerr << "setup" << std::endl;
 
 	for (int ch=1; ch <= numberOfChromosomes; ch++){
@@ -225,17 +194,16 @@ void Genome::Transpose(bool te_mutation) {
 		while (current != 0) {
 			// roll number of insertions
 			// std::cerr << "rolling ";
-			transposition_rate = current->GetTranspositionRate();
-			rpois = std::poisson_distribution<int>(transposition_rate);
+			rpois = std::poisson_distribution<int>(u);
 			transposeCount = rpois(mt);
-			// transposeCount = (int)rand.Poisson(transposition_rate);
+
 			TEs += transposeCount;
 			if ((TEs / (double)totalLength) > 0.8){
 				std::cerr << "ERROR : an individual with more 80% of genome covered by TEs in simualtion." << std::endl;
 				std::cerr << "Perhaps it would be good to modify parameters to meaningful values." << std::endl;
 				exit (EXIT_FAILURE);
 			}
-			// std::cerr << transposeCount << " using u " << transposition_rate << std::endl;
+
 			for (int t = 0; t < transposeCount; t++) {
 				// std::cerr << "transposing locus" << std::endl;
 				// roll where
@@ -247,21 +215,7 @@ void Genome::Transpose(bool te_mutation) {
 					// std::cerr << "CH: " << rolled_chromosome << " TEs: " << GetChromosome(rolled_chromosome).GetChromTECount() << std::endl;
 				} while (roll_again);
 
-				// std::cerr << "position rolled" << std::endl;
-				// roll for TE adjustment
-				if (te_mutation){
-					transposition_rate = transposition_rate * rnorm(mt);
-				}
-
-				// // is new TE going to affect fitness
-				// if (faf > rand.Uniform())
-				// 	affectW = true;
-				// else
-				// 	affectW = false;
-
-				// std::cerr << "taget ch" << rolled_chromosome << " pos " << rolled_position_on_ch << " transposition_rate " << transposition_rate << " affecting fitness? " << affectW << std::endl;
-				chromoVector.at(rolled_chromosome - 1).Insert(Transposon(rolled_position_on_ch, transposition_rate, affectW));
-				// std::cerr << "taget ch" << rolled_chromosome << " pos " << rolled_position_on_ch << " transposition_rate " << transposition_rate << " affecting fitness? " << affectW << std::endl;
+				chromoVector.at(rolled_chromosome - 1).Insert(rolled_position_on_ch);
 			}
 			// std::cerr << "GetNext ";
 			current = current->GetNext();
