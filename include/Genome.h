@@ -60,7 +60,7 @@ public:
 	static int initialTE;
 	const static int numberOfChromosomes;
 	const static int chromLength;
-	static double chromRecRates[];
+	static double chromRecRate;
 	static bool parametersSet;
 
 private:

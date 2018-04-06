@@ -15,18 +15,14 @@
 
 Chromosome::Chromosome():
 	chromNumber(0),
-	chromCopy(0),
-	length(0),
-	rChrom(0)
+	chromCopy(0)
 	{
 		headLocus = 0;
 	}
 
-Chromosome::Chromosome(int num, int copy, int len, double r):
+Chromosome::Chromosome(int num, int copy):
 	chromNumber(num),
-	chromCopy(copy),
-	length(len),
-	rChrom(r)
+	chromCopy(copy)
 	{
 	headLocus = 0;
 	}
@@ -59,16 +55,6 @@ unsigned int Chromosome::GetChromCopy() const
 	return chromCopy;
 }
 
-unsigned int Chromosome::GetLength() const
-{
-	return length;
-}
-
-double Chromosome::GetRecRate() const
-{
-	return rChrom;
-}
-
 Locus * Chromosome::GetHeadLocus() const
 {
 	return headLocus;
@@ -81,12 +67,6 @@ void Chromosome::SetHeadLocus(Locus * newHead)
 
 void Chromosome::SetChromNumber(int num) {
 	chromNumber = num;
-}
-
-void Chromosome::SetChromLengthAndRecRate(int len, double r)
-{
-	length = len;
-	rChrom = r;
 }
 
 bool Chromosome::TestEmpty(int site) const

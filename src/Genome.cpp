@@ -18,6 +18,7 @@
 
 #define CHROMOSOMES 16
 #define CHROM_LENGTH 500
+#define RECOMBINATION 5.4
 
 //int Genome::N = 0;
 double Genome::u = 0;
@@ -37,7 +38,7 @@ std::uniform_int_distribution<int> Genome::toss(0,1);
 const int Genome::numberOfChromosomes = CHROMOSOMES;
 const int Genome::chromLength = CHROM_LENGTH;
 /// maybe I should turn chromRec to constant as well
-double Genome::chromRecRates[16] = {5.6,5.6,5.6,5.6,5.6,5.6,5.6,5.6,5.6,5.6,5.6,5.6,5.6,5.6,5.6,5.6};
+double Genome::chromRecRate = RECOMBINATION;
 //double Genome::rGenome = 0.01;
 
 bool Genome::parametersSet = false;
@@ -77,7 +78,6 @@ Genome::Genome() {
 
 	for (int i=1; i <= numberOfChromosomes; i++) {
 		chromoVector.at(i-1).SetChromNumber(i);
-		chromoVector.at(i-1).SetChromLengthAndRecRate(chromLength, chromRecRates[i-1]);
 	}
 }
 
@@ -91,7 +91,6 @@ Genome::Genome(const Genome & rhs) {
 
 	for (int i=1; i <= numberOfChromosomes; i++){
 		chromoVector.at(i-1).SetChromNumber(i);
-		chromoVector.at(i-1).SetChromLengthAndRecRate(chromLength, chromRecRates[i-1]);
 		current = rhs.GetChromosome(i).GetHeadLocus();
 		while (current != 0) {
 			chromoVector.at(i-1).Insert(current->GetPosition());
@@ -107,9 +106,9 @@ double Genome::GetFAF() {
 
 int Genome::GenerateNumberOfChiasmas(int chromosome){
 	std::poisson_distribution<int> rpois;
-	rpois = std::poisson_distribution<int>(Genome::chromRecRates[chromosome-1]);
+	rpois = std::poisson_distribution<int>(Genome::chromRecRate);
 	return(rpois(mt));
-	// return(rand.Poisson(Genome::chromRecRates[chromosome-1]));
+	// return(rand.Poisson(Genome::chromRecRate));
 }
 
 /// to be checked if generates what I want

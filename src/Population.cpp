@@ -229,8 +229,7 @@ void Population::SummaryStatistics(const char * fileName, int generation)
 
 	int minCopyNum = 0; double minCopyFreq = 1.0;
 
-	for (int i=1; i <= Genome::numberOfChromosomes; i++)
-		vectorLength += GetIndividual(0).GetChromosome(i).GetLength();
+	vectorLength = Genome::numberOfChromosomes * Genome::chromLength;
 
 	std::vector<int> locationVector(vectorLength, 0);
 
@@ -261,7 +260,7 @@ void Population::SummaryStatistics(const char * fileName, int generation)
 	double meanFreq = 0.0, varFreq = 0.0, fractionEmpty=0.0, fractionFixed=0.0;
 
 	for (int j=1; j <= Genome::numberOfChromosomes; j++) {
-		chromLength = GetIndividual(0).GetChromosome(j).GetLength();
+		chromLength = Genome::chromLength;
 		for (int k=1; k <= chromLength; k++) {
 			for (int m=0; m < size; m++) {
 				empty1 = GetIndividual(m).GetChromosome(j).TestEmpty(k);
@@ -356,7 +355,7 @@ void Population::SummaryStatistics(int num)
 {
 	// to determine mean and variance of copy number per individual
 	double meanCopyNumber=0.0, varCopyNumber=0.0, x=0.0;
-	int chromLength = GetIndividual(0).GetChromosome(num).GetLength();
+	int chromLength = Genome::chromLength;
 	int size = GetPopSize();
 
 	std::vector<int> countVector(size, 0);
@@ -425,7 +424,7 @@ void Population::SummaryStatistics(int num)
 	fractionEmpty = (double)emptySites / (double)chromLength;
 	fractionFixed = (double)fixedSites / (double)chromLength;
 
-	double r = GetIndividual(0).GetChromosome(num).GetRecRate();
+	double r = Genome::chromRecRate;
 
 	std::cout << "CHROMOSOME [" << num << "]: Size = " << chromLength << ". r = " << r << std::endl;
 	std::cout << "Mean copy number per chromosome: " << meanCopyNumber << std::endl;
@@ -445,8 +444,7 @@ void Population::SummaryStatistics(int numFirst, int numLast)
 	int size = GetPopSize();
 	int numberOfChromosomesAnalyzed = numLast-numFirst+1;
 
-	for (int i=numFirst; i <= numLast; i++)
-		vectorLength += GetIndividual(0).GetChromosome(i).GetLength();
+	vectorLength = Genome::chromLength * numberOfChromosomesAnalyzed;
 
 	std::vector<double> meanVector(numberOfChromosomesAnalyzed, 0);
 	std::vector<double> varVector(numberOfChromosomesAnalyzed, 0);
@@ -490,7 +488,7 @@ void Population::SummaryStatistics(int numFirst, int numLast)
 
 	for (int j=0; j < numberOfChromosomesAnalyzed; j++)
 	{
-		chromLength = GetIndividual(0).GetChromosome(j+numFirst).GetLength();
+		chromLength = Genome::chromLength;
 		std::vector<int> locationVector(chromLength, 0);
 
 		for (int k=1; k <= chromLength; k++)
