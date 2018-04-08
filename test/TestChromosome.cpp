@@ -10,7 +10,7 @@ using namespace std;
 
 void TestChromosome::setUp(void) {
 	ch1 = new Chromosome();
-	ch2 = new Chromosome(1,1,10,1.53);
+	ch2 = new Chromosome(1,1);
 }
 
 void TestChromosome::tearDown(void) {

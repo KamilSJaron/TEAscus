@@ -25,7 +25,6 @@ double Genome::u = 0;
 double Genome::vt = 0;
 double Genome::sa = 0;
 double Genome::sb = 0;
-double Genome::faf = 0;
 int Genome::initialTE = 0;
 
 std::random_device Genome::rd;
@@ -63,8 +62,6 @@ void Genome::SetParameters() {
 		fin.getline(tempChar,100);
 		sb=strtod(tempChar,0);
 		fin.getline(tempChar,100);
-		faf=strtod(tempChar,0);
-		fin.getline(tempChar,100);
 		initialTE=strtol(tempChar,0,10);
 	}
 	fin.close();
@@ -97,11 +94,6 @@ Genome::Genome(const Genome & rhs) {
 			current = current->GetNext();
 		}
 	}
-}
-
-double Genome::GetFAF() {
-	/// frequency of TEs affecting fitness
-	return faf;
 }
 
 int Genome::GenerateNumberOfChiasmas(int chromosome){

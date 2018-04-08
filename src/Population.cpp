@@ -188,7 +188,6 @@ void Population::SaveParameters(const char * fileName) {
 	fout << "N = " << popSize << "\n";
 	fout << "u = " << Genome::u << ", v = " << Genome::vt << "\n";
 	fout << "initialTE = " << Genome::initialTE << "\n";
-	fout << "propAffectW = " << Genome::faf << "\n";
 	fout << "a = " << Genome::sa << ", b = " << Genome::sb << "\n";
 	fout << "chrom# = " << Genome::numberOfChromosomes << ", ploidy# = haploid\n" << "\n";
 
@@ -211,7 +210,6 @@ void Population::PrintParameters(){
 	std::cerr << "Transposition Rate = " << Genome::u << std::endl;
 	std::cerr << "Excision Rate = " << Genome::vt << std::endl;
 	std::cerr << "Initial TE count = " << Genome::initialTE << std::endl;
-	std::cerr << "Proportion affecting fitness = " << Genome::faf << std::endl;
 	std::cerr << "Selection parameters, a = " << Genome::sa << ", b = " << Genome::sb << std::endl;
 	std::cerr << "Number of chromosomes = " << Genome::numberOfChromosomes << ". Ploidy = haploid" << std::endl << std::endl;
 }

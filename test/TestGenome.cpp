@@ -12,7 +12,9 @@ using namespace std;
 void TestGenome::setUp(void) {
 	Genome::SetParameters();
 	ind1 = new Genome();
-	// ind2 = new Genome( ind1 );
+	Genome nice_folk;
+	ind2 = new Genome( nice_folk );
+	ind3 = new Genome( nice_folk );
 }
 
 void TestGenome::tearDown(void) {
@@ -47,7 +49,7 @@ void TestGenome::testRandomness(void){
 	// std::vector<int> generated_positions;
 	// std::vector<int> tosses_by_coin;
     //
-	int generated_number = -1;
+	// int generated_number = -1;
     //
 	// for (int ch = 1; ch <= 1; ch++){ //Genome::numberOfChromosomes
 	// 	for (int i = 0; i < 10000; i++){

@@ -24,7 +24,6 @@ public:
 	Genome(const Genome &);
 
 	static void SetParameters();
-	static double GetFAF();
 	static int GenerateNumberOfChiasmas(int chromosome);
 	static int GenerateGapPositionOnChromosome();
 	static void GenerateChromosomeAndPosition(int * ch, int * p);
@@ -55,7 +54,6 @@ public:
 	static double sb;				// selection coefficient beta under synergistic epistasis
 	static double u;				// transposition rate
 	static double vt;				// rate of element loss
-	static double faf;			// fraction affecting fitness (FAF)
 	//static double rGenome;		// genome wide recombination rate between TE sites
 	static int initialTE;
 	const static int numberOfChromosomes;
