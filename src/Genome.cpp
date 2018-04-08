@@ -29,10 +29,6 @@ int Genome::initialTE = 0;
 
 std::random_device Genome::rd;
 std::mt19937 Genome::mt(Genome::rd());
-std::uniform_int_distribution<int> Genome::rgap(0, CHROM_LENGTH);
-std::uniform_int_distribution<int> Genome::rpos(1, CHROM_LENGTH);
-std::uniform_int_distribution<int> Genome::rch(1, CHROMOSOMES);
-std::uniform_int_distribution<int> Genome::toss(0,1);
 
 const int Genome::numberOfChromosomes = CHROMOSOMES;
 const int Genome::chromLength = CHROM_LENGTH;
@@ -73,6 +69,7 @@ Genome::Genome() {
 	if (!parametersSet)
 		SetParameters();
 
+	random = Random::Random();
 	for (int i=1; i <= numberOfChromosomes; i++) {
 		chromoVector.at(i-1).SetChromNumber(i);
 	}
@@ -94,34 +91,6 @@ Genome::Genome(const Genome & rhs) {
 			current = current->GetNext();
 		}
 	}
-}
-
-int Genome::GenerateNumberOfChiasmas(int chromosome){
-	std::poisson_distribution<int> rpois;
-	rpois = std::poisson_distribution<int>(Genome::chromRecRate);
-	return(rpois(mt));
-	// return(rand.Poisson(Genome::chromRecRate));
-}
-
-/// to be checked if generates what I want
-int Genome::GenerateGapPositionOnChromosome(){
-	/// supposed to generate int 0 ... 400
-	return(rgap(mt));
-}
-
-void Genome::GenerateChromosomeAndPosition(int * ch, int * p){
-	/// in range from 1 to numberOfChromosomes
-	*ch = rch(mt);
-	/// in range from 1 to chromLength
-	*p = rpos(mt);
-}
-
-int Genome::GenerateTossACoin(){
-	return(toss(mt));
-	// if (rand.Uniform() < 0.5)
-	// 	return(true);
-	// else
-	// 	return(false);
 }
 
 unsigned int Genome::GetGenomeTECount() const {
@@ -200,7 +169,7 @@ void Genome::Transpose() {
 				// roll where
 				roll_again = true;
 				do {
-					Genome::GenerateChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
+					random.ChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
 					// std::cerr << "stuff rolled, testing" << rolled_chromosome << " at position " << rolled_position_on_ch << std::endl;
 					roll_again = !GetChromosome(rolled_chromosome).TestEmpty(rolled_position_on_ch);
 					// std::cerr << "CH: " << rolled_chromosome << " TEs: " << GetChromosome(rolled_chromosome).GetChromTECount() << std::endl;

@@ -9,10 +9,11 @@
 //
 // *********************************************************************
 
-#ifndef GENOME_H_EDOLGIN_TE
-#define GENOME_H_EDOLGIN_TE
+#ifndef GENOME_H_TEASCUS
+#define GENOME_H_TEASCUS
 
 #include "../include/Chromosome.h"
+#include "../include/Random.h"
 
 #include <vector>
 #include <random>
@@ -24,10 +25,6 @@ public:
 	Genome(const Genome &);
 
 	static void SetParameters();
-	static int GenerateNumberOfChiasmas(int chromosome);
-	static int GenerateGapPositionOnChromosome();
-	static void GenerateChromosomeAndPosition(int * ch, int * p);
-	static int GenerateTossACoin();
 
 	unsigned int GetGenomeTECount() const;
 	const Chromosome & GetChromosome(int) const;
@@ -63,12 +60,9 @@ public:
 
 private:
 
+	Random random;
 	static std::random_device rd;
 	static std::mt19937 mt;
-	static std::uniform_int_distribution<int> rgap;
-	static std::uniform_int_distribution<int> rpos;
-	static std::uniform_int_distribution<int> toss;
-	static std::uniform_int_distribution<int> rch;
 
 	std::vector<Chromosome> chromoVector;
 
