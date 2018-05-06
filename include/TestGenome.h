@@ -1,3 +1,14 @@
+// *********************************************************************
+//
+// TestGenome.h
+//
+// Created by: Kamil S Jaron, University of Lausanne
+//
+// First started: Februrary, 2018
+// Last edited:
+//
+// *********************************************************************
+
 #ifndef GENOMETEST_H
 #define GENOMETEST_H
 

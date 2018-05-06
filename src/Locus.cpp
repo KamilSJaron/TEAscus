@@ -3,6 +3,7 @@
 // locus.cpp
 //
 // Created by: Elie Dolgin, University of Edinburgh
+// Mofified by: Kamil S. Jaron, University of Lausanne
 //
 // First started: March 11, 2005
 // Last edited:
