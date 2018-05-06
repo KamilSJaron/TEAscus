@@ -62,8 +62,6 @@ public:
 private:
 
 	Random random;
-	static std::random_device rd;
-	static std::mt19937 mt;
 
 	std::vector<Chromosome> chromoVector;
 

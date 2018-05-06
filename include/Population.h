@@ -52,6 +52,7 @@ private:
 	std::uniform_int_distribution<int> rind;
 	std::uniform_real_distribution<double> runif;
 
+	Random random;
 	static std::random_device rd;
 	static std::mt19937 mt;
 

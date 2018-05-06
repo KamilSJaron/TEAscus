@@ -27,9 +27,6 @@ double Genome::sa = 0;
 double Genome::sb = 0;
 int Genome::initialTE = 0;
 
-std::random_device Genome::rd;
-std::mt19937 Genome::mt(Genome::rd());
-
 const int Genome::numberOfChromosomes = CHROMOSOMES;
 const int Genome::chromLength = CHROM_LENGTH;
 /// maybe I should turn chromRec to constant as well
@@ -139,7 +136,6 @@ void Genome::Transpose() {
 	int rolled_chromosome = 0, rolled_position_on_ch = 0;
 	unsigned int transposeCount = 0;
 	unsigned int totalLength = chromLength * numberOfChromosomes;
-	std::poisson_distribution<int> rpois;
 
 	int TEs = GetGenomeTECount();
 	// std::cerr << "Proportion of gneome covered by TEs : " << TEs / (double)totalLength << std::endl;
@@ -154,8 +150,8 @@ void Genome::Transpose() {
 		while (current != 0) {
 			// roll number of insertions
 			// std::cerr << "rolling ";
-			rpois = std::poisson_distribution<int>(u);
-			transposeCount = rpois(mt);
+			// rpois = std::poisson_distribution<int>(u);
+			transposeCount = random.NumberOfChiasmas();
 
 			TEs += transposeCount;
 			if ((TEs / (double)totalLength) > 0.8){
@@ -195,8 +191,7 @@ void Genome::ElementLoss() {
 
 	for (int i=1; i <= numberOfChromosomes; i++) {
 		chromTEcount = chromoVector.at(i-1).GetChromTECount();
-		rpois = std::poisson_distribution<int>(vt*chromTEcount);
-		lossCount = rpois(mt);
+		lossCount = random.Poisson(vt*chromTEcount);
 		// lossCount = (int)rand.Poisson(vt*chromTEcount);
 
 		/// if by any chance poisson distribution generates number greater than number of TEs
@@ -206,8 +201,7 @@ void Genome::ElementLoss() {
 		}
 
 		for (int k=0; k < lossCount; k++) {
-			runif = std::uniform_int_distribution<int>(1, chromTEcount);
-			nthTE = runif(mt);
+			nthTE = random.randomTE(chromTEcount);
 			// nthTE = (int)(rand.Uniform()*chromTEcount + 1);
 			chromoVector.at(i-1).Delete(nthTE);
 			chromTEcount--;

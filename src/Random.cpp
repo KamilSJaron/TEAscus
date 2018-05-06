@@ -22,8 +22,7 @@ Random::Random() : mt((std::random_device())()) {}
 Random::Random(int seed) : mt(seed) {}
 
 int Random::NumberOfChiasmas(){
-	std::poisson_distribution<int> rpois(Genome::chromRecRate);
-	return(rpois(Random::mt));
+	return(Random::Poisson(Genome::chromRecRate));
 }
 
 int Random::GapPositionOnChromosome(){
@@ -43,4 +42,14 @@ void Random::ChromosomeAndPosition(int * ch, int * p){
 int Random::TossACoin(){
 	std::uniform_int_distribution<int> toss(0,1);
 	return(toss(mt));
+}
+
+int Random::randomTE(int te_number){
+	std::uniform_int_distribution<int> runif(1, te_number);
+	return(runif(mt));
+}
+
+int Random::Poisson(double lambda){
+	std::poisson_distribution<int> rpois(lambda);
+	return(rpois(Random::mt));
 }

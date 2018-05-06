@@ -27,6 +27,8 @@ public:
 	int GapPositionOnChromosome();
 	void ChromosomeAndPosition(int * ch, int * p);
 	int TossACoin();
+	int randomTE(int te_number);
+	int Poisson(double lambda);
 
 private:
 
