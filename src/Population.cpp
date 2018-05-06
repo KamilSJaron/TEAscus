@@ -28,6 +28,8 @@ Population::Population(int size)
 	genoVector.resize(popSize);
 	rind = std::uniform_int_distribution<int>(0, popSize - 1);
 	runif = std::uniform_real_distribution<double>(0.0,1.0);
+
+	random = Random::Random();
 }
 
 Population::~Population()
@@ -80,7 +82,7 @@ void Population::Initialize() {
 	for (int j=0; j < Genome::initialTE; j++) {
 		// std::cerr << "Creating TE : " << j+1 << std::endl;
 		do {
-			Genome::GenerateChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
+			random.ChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
 		} while (!GetIndividual(0).GetChromosome(rolled_chromosome).TestEmpty(rolled_position_on_ch));
 
 		GetIndividual(0).GetChromosome(rolled_chromosome).Insert(rolled_position_on_ch);
@@ -576,7 +578,7 @@ void Population::generateTwoOspring(int ind,
 	std::vector<int> chiasmas;
 	int chiasma = 0, num_of_chiasmas = 0;
 	int last_roll = -1;
-	int crossing = Genome::GenerateTossACoin();
+	int crossing = random.TossACoin();
 	/// crossing == true --> 	offspring1 -\/- parent2 &
 	///							offspring2 -/\- parent1
 	/// crossing == false --> 	offspring1 ---- parent1 &
@@ -586,9 +588,9 @@ void Population::generateTwoOspring(int ind,
 	for (int ch = 1; ch <= Genome::numberOfChromosomes; ch++) {
 
 		/// Roll chiasmas for positions and sort them
-		num_of_chiasmas = Genome::GenerateNumberOfChiasmas(ch);
+		num_of_chiasmas = random.NumberOfChiasmas();
 		for(int chiasma_i = 0; chiasma_i < num_of_chiasmas; chiasma_i++){
-			chiasmas.push_back( Genome::GenerateGapPositionOnChromosome() );
+			chiasmas.push_back( random.GapPositionOnChromosome() );
 		}
 		sort(chiasmas.begin(), chiasmas.end());
 
