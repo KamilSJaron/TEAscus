@@ -1,3 +1,15 @@
+// *********************************************************************
+//
+// main.cpp
+//
+// Created by: Elie Dolgin, University of Edinburgh
+// Mofified by: Kamil S. Jaron, University of Lausanne
+//
+// First started: March 11, 2005
+// Last edited:
+//
+// *********************************************************************
+
 
 #include <iostream>
 #include <fstream>
@@ -21,8 +33,8 @@ int main(int argc, char **argv){
 	/* constants - input and output files */
 	const char *detailed_out = "detailed.txt";
 	const char *input_file = "input.txt";
-	bool sex = false, te_mutation = false;
-	string runnig_sex = "False", runnig_te_mutation = "False";
+	bool sex = false;
+	string runnig_sex = "False";
 
 	int replicates = 10;
 	int generations = 990;
@@ -51,10 +63,6 @@ int main(int argc, char **argv){
 		case 's':
 			sex = true;
 			runnig_sex = "True";
-			break;
-		case 'm':
-			te_mutation = true;
-			runnig_te_mutation = "True";
 			break;
 		case 'i':
 			input_file = optarg;
@@ -106,7 +114,6 @@ int main(int argc, char **argv){
 	cerr << "Number of burn-in generations : " << burnin << endl;
 	cerr << "Number of replicates : " << replicates << endl;
 	cerr << "Sex every " << sex_report_period << " generations : " << runnig_sex << endl;
-	cerr << "Mutation of transposition rates : " << runnig_te_mutation << endl;
 
 	// For testing input
 	// return 0;
@@ -140,7 +147,7 @@ int main(int argc, char **argv){
 
 		for (int gen = 1; gen <= burnin; gen++){
 			// cerr << "Runnin burnin" << endl;
-			pop->TranspositionAndLoss(te_mutation);
+			pop->TranspositionAndLoss();
 		}
 
 		pop->SummaryStatistics(detailed_out, 0);
@@ -168,7 +175,7 @@ int main(int argc, char **argv){
 
 			// cerr << "Transposing " << endl;
 			// TRANSPOSITION & LOSS
-			pop->TranspositionAndLoss(te_mutation);
+			pop->TranspositionAndLoss();
 
 			/// printing results after transposition
 			cerr << ".";

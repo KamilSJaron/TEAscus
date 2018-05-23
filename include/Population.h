@@ -3,6 +3,7 @@
 // population.h
 //
 // Created by: Elie Dolgin, University of Edinburgh
+// Mofified by: Kamil S. Jaron, University of Lausanne
 //
 // First started: March 17, 2005
 // Last edited:
@@ -26,10 +27,7 @@ public:
 	const Genome & GetIndividual(int) const;
 	int GetPopSize() const;
 	unsigned int GetPopulationTECount() const;
-	unsigned int GetPopulationTECountAffectingFitness() const;
 	double GetPopulationMeanFitness() const;
-	double GetMeanU() const;
-	double GetVarU(double mean_u) const;
 
 	void Initialize();
 	int SelectVitalIndividual();
@@ -37,7 +35,7 @@ public:
 	void DeleteIndividual(int);
 	Population * SexualReproduction();
 	Population * AsexualReproduction();
-	void TranspositionAndLoss(bool);
+	void TranspositionAndLoss();
 
 	void ListPopulationSites() const;
 	void SaveParameters(const char *);
@@ -54,6 +52,7 @@ private:
 	std::uniform_int_distribution<int> rind;
 	std::uniform_real_distribution<double> runif;
 
+	Random random;
 	static std::random_device rd;
 	static std::mt19937 mt;
 

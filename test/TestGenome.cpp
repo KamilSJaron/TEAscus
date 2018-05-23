@@ -12,7 +12,9 @@ using namespace std;
 void TestGenome::setUp(void) {
 	Genome::SetParameters();
 	ind1 = new Genome();
-	// ind2 = new Genome( ind1 );
+	Genome nice_folk;
+	ind2 = new Genome( nice_folk );
+	ind3 = new Genome( nice_folk );
 }
 
 void TestGenome::tearDown(void) {
@@ -39,7 +41,7 @@ void TestGenome::testLocusIteration(void){
 	} // for
 }
 
-void TestGenome::testRandomness(void){
+// void TestGenome::testRandomness(void){
 	// This test is due to random nature hard to test automatically
 	// Hence it's sort of manual - uncoment secion and run it and be/not be satisfied
 
@@ -47,7 +49,7 @@ void TestGenome::testRandomness(void){
 	// std::vector<int> generated_positions;
 	// std::vector<int> tosses_by_coin;
     //
-	int generated_number = -1;
+	// int generated_number = -1;
     //
 	// for (int ch = 1; ch <= 1; ch++){ //Genome::numberOfChromosomes
 	// 	for (int i = 0; i < 10000; i++){
@@ -73,31 +75,31 @@ void TestGenome::testRandomness(void){
 	// std::cerr << "Proportion of max : " << (double)genome_lengths / 10000 << "\n";
 	// std::cerr << "expected proportion : " << (double)1 / (Genome::chromLength + 1) << "\n";
 
-	int ch_zeros = 0, p_zeros = 0;
-	int ch_max = 0, p_max = 0;
-	int rolled_position_on_ch = 0, rolled_chromosome = 0;
-	int replicates = 100000;
-
-	for (int i = 0; i < replicates; i++){
-		Genome::GenerateChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
-		if (rolled_position_on_ch == 0){
-			p_zeros++;
-		}
-		if (rolled_chromosome == 0){
-			ch_zeros++;
-		}
-		if(rolled_position_on_ch > Genome::chromLength){
-			p_max++;
-		}
-		if (rolled_chromosome > Genome::numberOfChromosomes){
-			ch_max++;
-		}
-	}
-
-	CPPUNIT_ASSERT_EQUAL(0, p_zeros);
-	CPPUNIT_ASSERT_EQUAL(0, ch_zeros);
-	CPPUNIT_ASSERT_EQUAL(0, p_max);
-	CPPUNIT_ASSERT_EQUAL(0, ch_max);
+	// int ch_zeros = 0, p_zeros = 0;
+	// int ch_max = 0, p_max = 0;
+	// int rolled_position_on_ch = 0, rolled_chromosome = 0;
+	// int replicates = 100000;
+	//
+	// for (int i = 0; i < replicates; i++){
+	// 	Genome::GenerateChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
+	// 	if (rolled_position_on_ch == 0){
+	// 		p_zeros++;
+	// 	}
+	// 	if (rolled_chromosome == 0){
+	// 		ch_zeros++;
+	// 	}
+	// 	if(rolled_position_on_ch > Genome::chromLength){
+	// 		p_max++;
+	// 	}
+	// 	if (rolled_chromosome > Genome::numberOfChromosomes){
+	// 		ch_max++;
+	// 	}
+	// }
+	//
+	// CPPUNIT_ASSERT_EQUAL(0, p_zeros);
+	// CPPUNIT_ASSERT_EQUAL(0, ch_zeros);
+	// CPPUNIT_ASSERT_EQUAL(0, p_max);
+	// CPPUNIT_ASSERT_EQUAL(0, ch_max);
 
 	// int generated_sum = 0;
 	// for (int i = 0; i < 1000000; i++){
@@ -105,4 +107,4 @@ void TestGenome::testRandomness(void){
 	// }
     //
 	// std::cerr << "\n" << "Proportion of true : " << (double)generated_sum / 1000000 << "\n";
-}
+// }

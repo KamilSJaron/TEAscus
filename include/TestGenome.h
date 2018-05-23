@@ -1,3 +1,14 @@
+// *********************************************************************
+//
+// TestGenome.h
+//
+// Created by: Kamil S Jaron, University of Lausanne
+//
+// First started: Februrary, 2018
+// Last edited:
+//
+// *********************************************************************
+
 #ifndef GENOMETEST_H
 #define GENOMETEST_H
 
@@ -11,7 +22,6 @@ class TestGenome : public CPPUNIT_NS :: TestFixture {
 	CPPUNIT_TEST_SUITE (TestGenome);
 	CPPUNIT_TEST (testConstructor);
 	CPPUNIT_TEST (testLocusIteration);
-	CPPUNIT_TEST (testRandomness);
 	CPPUNIT_TEST_SUITE_END ();
 
 	public:
@@ -21,7 +31,6 @@ class TestGenome : public CPPUNIT_NS :: TestFixture {
 	protected:
 		void testConstructor (void);
 		void testLocusIteration (void);
-		void testRandomness (void);
 
 	private:
 		Genome *ind1, *ind2, *ind3;

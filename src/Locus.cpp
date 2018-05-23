@@ -3,6 +3,7 @@
 // locus.cpp
 //
 // Created by: Elie Dolgin, University of Edinburgh
+// Mofified by: Kamil S. Jaron, University of Lausanne
 //
 // First started: March 11, 2005
 // Last edited:
@@ -18,17 +19,17 @@
 //	next(0)
 //	{}
 
-Locus::Locus(Transposon te):
-	transElem(te),
+Locus::Locus(int loc):
+	location(loc),
 	next(0) { }
 
-Locus::Locus(Transposon te, Locus * n):
-	transElem(te),
+Locus::Locus(int loc, Locus * n):
+	location(loc),
 	next(n)
 	{}
 
 Locus::Locus(const Locus & rhs) {
-	transElem = rhs.GetTransposon();
+	location = rhs.GetPosition();
 	next = rhs.GetNext();
 }
 
@@ -38,20 +39,12 @@ Locus::~Locus() {
 	//std::cout << "Locus destructor w/ te: " << GetTransposon().GetLocation() << std::endl;
 }
 
-Transposon Locus::GetTransposon() const {
-	return transElem;
+int Locus::GetPosition() const {
+	return location;
 }
 
 Locus * Locus::GetNext() const {
 	return next;
-}
-
-int Locus::GetPosition() const {
-	return transElem.GetLocation();
-}
-
-double Locus::GetTranspositionRate() const {
-	return transElem.GetTranspositionRate();
 }
 
 void Locus::SetNext(Locus * loc) {

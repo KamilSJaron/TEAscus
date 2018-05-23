@@ -1,7 +1,6 @@
 // simulator Transposon
 // testing class Locus
 
-#include "../include/Transposon.h"
 #include "../include/TestLocus.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (TestLocus);
@@ -10,9 +9,9 @@ using namespace CppUnit;
 using namespace std;
 
 void TestLocus::setUp(void) {
-	locus1 = new Locus(Transposon(7, 0.007, true));
-	locus2 = new Locus(Transposon(4, 0.008, true), locus1);
-	locus3 = new Locus(Transposon());
+	locus1 = new Locus(7);
+	locus2 = new Locus(4, locus1);
+	locus3 = new Locus(0);
 }
 
 void TestLocus::tearDown(void) {

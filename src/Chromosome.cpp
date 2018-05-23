@@ -3,6 +3,7 @@
 // chromosome.cpp
 //
 // Created by: Elie Dolgin, University of Edinburgh
+// Mofified by: Kamil S. Jaron, University of Lausanne
 //
 // First started: March 11, 2005
 // Last edited:
@@ -15,18 +16,14 @@
 
 Chromosome::Chromosome():
 	chromNumber(0),
-	chromCopy(0),
-	length(0),
-	rChrom(0)
+	chromCopy(0)
 	{
 		headLocus = 0;
 	}
 
-Chromosome::Chromosome(int num, int copy, int len, double r):
+Chromosome::Chromosome(int num, int copy):
 	chromNumber(num),
-	chromCopy(copy),
-	length(len),
-	rChrom(r)
+	chromCopy(copy)
 	{
 	headLocus = 0;
 	}
@@ -49,38 +46,6 @@ unsigned int Chromosome::GetChromTECount() const
 	return count;
 }
 
-unsigned int Chromosome::GetChromTECountAffectingFitness() const
-{
-	unsigned int count = 0;
-	Locus * current = headLocus;
-	while (current != 0)
-	{
-		if (current->GetTransposon().GetEffect())
-			count++;
-		current = current->GetNext();
-	}
-	return count;
-}
-
-double Chromosome::GetMeanU() const {
-	double mean_u = 0.0;
-	int count = 0;
-	Locus * current = headLocus;
-
-	while (current != 0) {
-		mean_u += current->GetTransposon().GetTranspositionRate();
-		count++;
-		current = current->GetNext();
-	}
-
-	if (count == 0) {
-		return -1;
-	}
-
-	mean_u /= (double)count;
-	return(mean_u);
-}
-
 unsigned int Chromosome::GetChromNumber() const
 {
 	return chromNumber;
@@ -89,16 +54,6 @@ unsigned int Chromosome::GetChromNumber() const
 unsigned int Chromosome::GetChromCopy() const
 {
 	return chromCopy;
-}
-
-unsigned int Chromosome::GetLength() const
-{
-	return length;
-}
-
-double Chromosome::GetRecRate() const
-{
-	return rChrom;
 }
 
 Locus * Chromosome::GetHeadLocus() const
@@ -115,31 +70,24 @@ void Chromosome::SetChromNumber(int num) {
 	chromNumber = num;
 }
 
-void Chromosome::SetChromLengthAndRecRate(int len, double r)
-{
-	length = len;
-	rChrom = r;
-}
-
 bool Chromosome::TestEmpty(int site) const
 {
 	Locus * current = headLocus;
 
-	while ((current != 0) && (current->GetTransposon().GetLocation() < site))
+	while ((current != 0) && (current->GetPosition() < site))
 		current = current->GetNext();
 
 	if (current == 0)
 		return true;
-	if (current->GetTransposon().GetLocation() == site)
+	if (current->GetPosition() == site)
 		return false;
 	else
 		return true;
 }
 
-void Chromosome::Insert (Transposon te)
+void Chromosome::Insert (int location)
 {
-	Locus * newLocus = new Locus (te);
-	int newLocation = te.GetLocation();
+	Locus * newLocus = new Locus (location);
 
 	if (headLocus == 0)
 	{
@@ -148,7 +96,7 @@ void Chromosome::Insert (Transposon te)
 	}
 
 	// if the new inserted locus is upstream of head, then make it the new head
-	if (headLocus->GetTransposon().GetLocation() > newLocation)
+	if (headLocus->GetPosition() > location)
 	{
 		newLocus->SetNext(headLocus);
 		headLocus = newLocus;
@@ -170,10 +118,10 @@ void Chromosome::Insert (Transposon te)
 		}
 
 		nextLocus = currentLocus->GetNext();
-		nextLocation = nextLocus->GetTransposon().GetLocation();
+		nextLocation = nextLocus->GetPosition();
 		// std::cerr << nextLocation << std::endl;
 
-		if (nextLocation > newLocation)
+		if (nextLocation > location)
 		{
 			currentLocus->SetNext(newLocus);
 			newLocus->SetNext(nextLocus);

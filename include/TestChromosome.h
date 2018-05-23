@@ -1,3 +1,14 @@
+// *********************************************************************
+//
+// TestChromosome.h
+//
+// Created by: Kamil S Jaron, University of Lausanne
+//
+// First started: Februrary, 2018
+// Last edited:
+//
+// *********************************************************************
+
 #ifndef CHROMTEST_H
 #define CHROMTEST_H
 

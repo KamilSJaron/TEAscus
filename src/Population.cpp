@@ -3,6 +3,7 @@
 // population.cpp
 //
 // Created by: Elie Dolgin, University of Edinburgh
+// Mofified by: Kamil S. Jaron, University of Lausanne
 //
 // First started: March 17, 2005
 // Last edited:
@@ -27,6 +28,8 @@ Population::Population(int size)
 	genoVector.resize(popSize);
 	rind = std::uniform_int_distribution<int>(0, popSize - 1);
 	runif = std::uniform_real_distribution<double>(0.0,1.0);
+
+	random = Random::Random();
 }
 
 Population::~Population()
@@ -55,14 +58,6 @@ unsigned int Population::GetPopulationTECount() const
 	return populationTEcount;
 }
 
-unsigned int Population::GetPopulationTECountAffectingFitness() const
-{
-	unsigned int populationTEcount = 0;
-	for (int i=0; i < popSize; i++)
-		populationTEcount += GetIndividual(i).GetGenomeTECountAffectingFitness();
-	return populationTEcount;
-}
-
 double Population::GetPopulationMeanFitness() const
 {
 	double populationFitness = 0.0;
@@ -70,46 +65,6 @@ double Population::GetPopulationMeanFitness() const
 		populationFitness += GetIndividual(i).GetGenomeFitness();
 	populationFitness /= (double)popSize;
 	return populationFitness;
-}
-
-double Population::GetMeanU() const {
-	double mean_u = 0.0, genome_mean_u = 0.0;
-	int genomes_with_TEs = 0;
-	for (int i=0; i < popSize; i++) {
-		genome_mean_u = GetIndividual(i).GetMeanU();
-		if (genome_mean_u != -1){
-			mean_u += genome_mean_u;
-			genomes_with_TEs++;
-		}
-	}
-	mean_u /= (double)genomes_with_TEs;
-	return(mean_u);
-}
-
-double Population::GetVarU(double mean_u) const {
-	double sum_of_squares = 0.0, var_u = 0.0;
-	int count = 0;
-
-	for (int a=1; a < popSize; a++) {
-		for (int i=1; i <= Genome::numberOfChromosomes; i++) {
-			Locus * current = GetIndividual(a).GetChromosome(i).GetHeadLocus();
-
-			while (current != 0) {
-				sum_of_squares += pow(current->GetTranspositionRate() - mean_u, 2);
-				count++;
-				current = current->GetNext();
-			}
-		}
-	}
-
-		// genome_mean_u = GetIndividual(i).GetMeanU();
-		// if (genome_mean_u != -1){
-		// 	mean_u += genome_mean_u;
-		// 	genomes_with_TEs++;
-		// }
-
-	var_u = sum_of_squares / (double)count;
-	return(var_u);
 }
 
 void Population::Initialize() {
@@ -127,10 +82,10 @@ void Population::Initialize() {
 	for (int j=0; j < Genome::initialTE; j++) {
 		// std::cerr << "Creating TE : " << j+1 << std::endl;
 		do {
-			Genome::GenerateChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
+			random.ChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
 		} while (!GetIndividual(0).GetChromosome(rolled_chromosome).TestEmpty(rolled_position_on_ch));
 
-		GetIndividual(0).GetChromosome(rolled_chromosome).Insert(Transposon(rolled_position_on_ch, Genome::u_initial, true));
+		GetIndividual(0).GetChromosome(rolled_chromosome).Insert(rolled_position_on_ch);
 	}
 
 	/// copy individual 0 to all other individuals
@@ -139,7 +94,7 @@ void Population::Initialize() {
 			Locus * current = GetIndividual(0).GetChromosome(i).GetHeadLocus();
 
 			while (current != 0) {
-				GetIndividual(a).GetChromosome(i).Insert(current->GetTransposon());
+				GetIndividual(a).GetChromosome(i).Insert(current->GetPosition());
 				current = current->GetNext();
 			}
 		}
@@ -198,7 +153,7 @@ Population * Population::AsexualReproduction() {
 		for (int i=1; i <= Genome::numberOfChromosomes; i++) {
 			Locus * current = parent.GetChromosome(i).GetHeadLocus();
 			while (current != 0) {
-				newPopulation->GetIndividual(a).GetChromosome(i).Insert(current->GetTransposon());
+				newPopulation->GetIndividual(a).GetChromosome(i).Insert(current->GetPosition());
 				current = current->GetNext();
 			}
 		}
@@ -207,10 +162,10 @@ Population * Population::AsexualReproduction() {
 	return newPopulation;
 }
 
-void Population::TranspositionAndLoss(bool te_mutation)
+void Population::TranspositionAndLoss()
 {
 	for (int i=0; i < popSize; i++) {
-		genoVector.at(i).Transpose(te_mutation);
+		genoVector.at(i).Transpose();
 		genoVector.at(i).ElementLoss();
 	}
 }
@@ -234,14 +189,13 @@ void Population::SaveParameters(const char * fileName) {
 
 	fout << "\n" << asctime (timeinfo) << "\n";
 	fout << "N = " << popSize << "\n";
-	fout << "u = " << Genome::u_initial << ", v = " << Genome::vt << "\n";
+	fout << "u = " << Genome::u << ", v = " << Genome::vt << "\n";
 	fout << "initialTE = " << Genome::initialTE << "\n";
-	fout << "propAffectW = " << Genome::faf << "\n";
 	fout << "a = " << Genome::sa << ", b = " << Genome::sb << "\n";
 	fout << "chrom# = " << Genome::numberOfChromosomes << ", ploidy# = haploid\n" << "\n";
 
 	fout << "GEN" << "\t" << "n" << "\t" << "Vn" << "\t" << "x" << "\t" << "Vx" << "\t";
-	fout << "empty" << "\t" << "fixed" << "\t" << "min#" << "\t" << "minFreq" << "\t" << "mean_u" << "\tvar_u" << "\n";
+	fout << "empty" << "\t" << "fixed" << "\t" << "min#" << "\t" << "minFreq\n";
 
 	fout.close();
 }
@@ -256,10 +210,9 @@ void Population::PrintParameters(){
 
 	std::cerr << asctime (timeinfo) << std::endl;
 	std::cerr << "Population Size = " << popSize << std::endl;
-	std::cerr << "Transposition Rate = " << Genome::u_initial << std::endl;
+	std::cerr << "Transposition Rate = " << Genome::u << std::endl;
 	std::cerr << "Excision Rate = " << Genome::vt << std::endl;
 	std::cerr << "Initial TE count = " << Genome::initialTE << std::endl;
-	std::cerr << "Proportion affecting fitness = " << Genome::faf << std::endl;
 	std::cerr << "Selection parameters, a = " << Genome::sa << ", b = " << Genome::sb << std::endl;
 	std::cerr << "Number of chromosomes = " << Genome::numberOfChromosomes << ". Ploidy = haploid" << std::endl << std::endl;
 }
@@ -271,25 +224,18 @@ void Population::SummaryStatistics(const char * fileName, int generation)
 
 	// to determine mean and variance of copy number per individual
 	double meanCopyNumber=0.0, varCopyNumber=0.0, x=0.0;
-	double proportionAffectingW=0.0;
-	double mean_u = 0.0, var_u = 0.0;
 	int chromLength=0, vectorLength=0, y=0;
 
 	int size = GetPopSize();
 
 	int minCopyNum = 0; double minCopyFreq = 1.0;
 
-	for (int i=1; i <= Genome::numberOfChromosomes; i++)
-		vectorLength += GetIndividual(0).GetChromosome(i).GetLength();
+	vectorLength = Genome::numberOfChromosomes * Genome::chromLength;
 
 	std::vector<int> locationVector(vectorLength, 0);
 
 	meanCopyNumber = ((double)GetPopulationTECount()) / ((double)size);
-	mean_u = GetMeanU();
-	var_u = GetVarU(mean_u);
 
-	if (meanCopyNumber != 0)
-		proportionAffectingW = ((double)GetPopulationTECountAffectingFitness()) / ((double)GetPopulationTECount());
 	minCopyNum = (int)meanCopyNumber + 1;
 
 	for (int i=0; i < size; i++) {
@@ -315,7 +261,7 @@ void Population::SummaryStatistics(const char * fileName, int generation)
 	double meanFreq = 0.0, varFreq = 0.0, fractionEmpty=0.0, fractionFixed=0.0;
 
 	for (int j=1; j <= Genome::numberOfChromosomes; j++) {
-		chromLength = GetIndividual(0).GetChromosome(j).GetLength();
+		chromLength = Genome::chromLength;
 		for (int k=1; k <= chromLength; k++) {
 			for (int m=0; m < size; m++) {
 				empty1 = GetIndividual(m).GetChromosome(j).TestEmpty(k);
@@ -359,25 +305,18 @@ void Population::SummaryStatistics(const char * fileName, int generation)
 	std::cout << "Mean copy number per individual: " << meanCopyNumber << std::endl;
 	std::cout << "Variance in copy number between individuals: " << varCopyNumber << std::endl;
 	std::cout << "Proportion affecting fitness: ";
-	if (meanCopyNumber == 0)
-		std::cout << "n/a" << std::endl;
-	else
-		std::cout << proportionAffectingW << std::endl;
 	std::cout << "Mean element frequency: " << meanFreq << std::endl;
 	std::cout << "Variance in element frequency: " << varFreq << std::endl;
 	std::cout << "Fraction of loci with zero frequency: " << fractionEmpty << std::endl;
 	std::cout << "Fraction of fixed loci: " << fractionFixed << std::endl;
 	std::cout << "Minimum copy number: " << minCopyNum << std::endl;
 	std::cout << "Minimum copy frequency: " << minCopyFreq << std::endl;
-	std::cout << "Mean transposable rate: " << mean_u << std::endl;
-	std::cout << "Variance in transposable rate: " << var_u << std::endl;
 	std::cout << std::endl;
-	// std::cout << "Variance in transposable rates: " << var_u << std::endl << std::endl;
 	// OUTPUT TO FILE
 
 	fout << generation << "\t" << meanCopyNumber << "\t" << varCopyNumber << "\t" << meanFreq << "\t";
 	fout << varFreq << "\t" << fractionEmpty << "\t" << fractionFixed << "\t" << minCopyNum <<"\t";
-	fout << minCopyFreq << "\t" << mean_u << "\t" << var_u << "\n";
+	fout << minCopyFreq << "\n";
 
 	fout.close();
 }
@@ -399,10 +338,10 @@ void Population::RecordPopulation(const char * fileName, int generation)
 				loc = GetIndividual(i).GetChromosome(j).GetHeadLocus();
 				if (loc != 0) {
 					while (loc->GetNext() != 0) {
-						fout << j << "\n" << loc->GetTransposon().GetLocation() << "\n";
+						fout << j << "\n" << loc->GetPosition() << "\n";
 						loc = loc->GetNext();
 					}
-					fout << j << "\n" << loc->GetTransposon().GetLocation() << "\n";
+					fout << j << "\n" << loc->GetPosition() << "\n";
 					if (j == Genome::numberOfChromosomes){
 						fout << ".\n";
 					}
@@ -417,7 +356,7 @@ void Population::SummaryStatistics(int num)
 {
 	// to determine mean and variance of copy number per individual
 	double meanCopyNumber=0.0, varCopyNumber=0.0, x=0.0;
-	int chromLength = GetIndividual(0).GetChromosome(num).GetLength();
+	int chromLength = Genome::chromLength;
 	int size = GetPopSize();
 
 	std::vector<int> countVector(size, 0);
@@ -486,7 +425,7 @@ void Population::SummaryStatistics(int num)
 	fractionEmpty = (double)emptySites / (double)chromLength;
 	fractionFixed = (double)fixedSites / (double)chromLength;
 
-	double r = GetIndividual(0).GetChromosome(num).GetRecRate();
+	double r = Genome::chromRecRate;
 
 	std::cout << "CHROMOSOME [" << num << "]: Size = " << chromLength << ". r = " << r << std::endl;
 	std::cout << "Mean copy number per chromosome: " << meanCopyNumber << std::endl;
@@ -506,8 +445,7 @@ void Population::SummaryStatistics(int numFirst, int numLast)
 	int size = GetPopSize();
 	int numberOfChromosomesAnalyzed = numLast-numFirst+1;
 
-	for (int i=numFirst; i <= numLast; i++)
-		vectorLength += GetIndividual(0).GetChromosome(i).GetLength();
+	vectorLength = Genome::chromLength * numberOfChromosomesAnalyzed;
 
 	std::vector<double> meanVector(numberOfChromosomesAnalyzed, 0);
 	std::vector<double> varVector(numberOfChromosomesAnalyzed, 0);
@@ -551,7 +489,7 @@ void Population::SummaryStatistics(int numFirst, int numLast)
 
 	for (int j=0; j < numberOfChromosomesAnalyzed; j++)
 	{
-		chromLength = GetIndividual(0).GetChromosome(j+numFirst).GetLength();
+		chromLength = Genome::chromLength;
 		std::vector<int> locationVector(chromLength, 0);
 
 		for (int k=1; k <= chromLength; k++)
@@ -640,7 +578,7 @@ void Population::generateTwoOspring(int ind,
 	std::vector<int> chiasmas;
 	int chiasma = 0, num_of_chiasmas = 0;
 	int last_roll = -1;
-	int crossing = Genome::GenerateTossACoin();
+	int crossing = random.TossACoin();
 	/// crossing == true --> 	offspring1 -\/- parent2 &
 	///							offspring2 -/\- parent1
 	/// crossing == false --> 	offspring1 ---- parent1 &
@@ -650,9 +588,9 @@ void Population::generateTwoOspring(int ind,
 	for (int ch = 1; ch <= Genome::numberOfChromosomes; ch++) {
 
 		/// Roll chiasmas for positions and sort them
-		num_of_chiasmas = Genome::GenerateNumberOfChiasmas(ch);
+		num_of_chiasmas = random.NumberOfChiasmas();
 		for(int chiasma_i = 0; chiasma_i < num_of_chiasmas; chiasma_i++){
-			chiasmas.push_back( Genome::GenerateGapPositionOnChromosome() );
+			chiasmas.push_back( random.GapPositionOnChromosome() );
 		}
 		sort(chiasmas.begin(), chiasmas.end());
 
@@ -684,26 +622,26 @@ void Population::generateTwoOspring(int ind,
 			if (crossing == 1) {
 				/// write parent1 to offspring ind
 				while(pos1 < chiasma and pos1 != 0){
-					newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par1->GetTransposon());
+					newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par1->GetPosition());
 					loc_par1 = loc_par1->GetNext();
 					pos1 = getLocusPosition(loc_par1);
 				}
 				/// write parent2 to offspring ind + 1
 				while(pos2 < chiasma and pos2 != 0){
-					newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par2->GetTransposon());
+					newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par2->GetPosition());
 					loc_par2 = loc_par2->GetNext();
 					pos2 = getLocusPosition(loc_par2);
 				}
 			} else {
 				/// write parent1 to offspring ind + 1
 				while(pos1 < chiasma and pos1 != 0){
-					newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par1->GetTransposon());
+					newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par1->GetPosition());
 					loc_par1 = loc_par1->GetNext();
 					pos1 = getLocusPosition(loc_par1);
 				}
 				/// write parent2 to offspring ind
 				while(pos2 < chiasma and pos2 != 0){
-					newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par2->GetTransposon());
+					newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par2->GetPosition());
 					loc_par2 = loc_par2->GetNext();
 					pos2 = getLocusPosition(loc_par2);
 				}
@@ -715,26 +653,26 @@ void Population::generateTwoOspring(int ind,
 		if (crossing) {
 			/// parent1 to offspring ind
 			while(pos1 != 0){
-				newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par1->GetTransposon());
+				newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par1->GetPosition());
 				loc_par1 = loc_par1->GetNext();
 				pos1 = getLocusPosition(loc_par1);
 			}
 			/// parent2 to offspring ind + 1
 			while(pos2 != 0){
-				newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par2->GetTransposon());
+				newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par2->GetPosition());
 				loc_par2 = loc_par2->GetNext();
 				pos2 = getLocusPosition(loc_par2);
 			}
 		} else {
 			/// parent1 to offspring ind + 1
 			while(pos1 != 0){
-				newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par1->GetTransposon());
+				newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par1->GetPosition());
 				loc_par1 = loc_par1->GetNext();
 				pos1 = getLocusPosition(loc_par1);
 			}
 			/// parent2 to offspring ind
 			while(pos2 != 0){
-				newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par2->GetTransposon());
+				newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par2->GetPosition());
 				loc_par2 = loc_par2->GetNext();
 				pos2 = getLocusPosition(loc_par2);
 			}

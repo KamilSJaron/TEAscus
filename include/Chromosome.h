@@ -3,6 +3,7 @@
 // chromosome.h
 //
 // Created by: Elie Dolgin, University of Edinburgh
+// Mofified by: Kamil S. Jaron, University of Lausanne
 //
 // First started: March 11, 2005
 // Last edited:
@@ -19,25 +20,20 @@ class Chromosome
 {
   public:
 	Chromosome();
-	Chromosome(int, int, int, double);
+	Chromosome(int, int);
 	~Chromosome();
 
 	unsigned int GetChromTECount() const;
-	unsigned int GetChromTECountAffectingFitness() const;
-    double GetMeanU() const;
 	unsigned int GetChromNumber() const;
 	unsigned int GetChromCopy() const;
-	unsigned int GetLength() const;
-	double GetRecRate() const;
 	Locus * GetHeadLocus() const;
 
 	void SetHeadLocus(Locus *);
 	void SetChromNumber(int);
-	void SetChromLengthAndRecRate(int, double);
 
 	bool TestEmpty(int) const;
 
-	void Insert(Transposon);
+	void Insert(int);
 	void Delete(int);
 
 	void ListChromSites() const;
@@ -48,10 +44,6 @@ class Chromosome
 
 	unsigned int chromNumber;	// chromosome number
 	unsigned int chromCopy;		// denotes ploidy
-	unsigned int length;
-
-	double rChrom;				// recombination rate between TE sites
-
 };
 
 

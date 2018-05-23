@@ -43,8 +43,7 @@ Line 2: ut (transposition rate u)
 Line 3: vt (excision rate v)
 Line 4: sa (a, selection parameter)
 Line 5: sb (b, synergism within family selection parameter)
-Line 6: faf (frequency affecting fitness)
-Line 7: n_0 (number of TEs at the beginning)
+Line 6: n_0 (number of TEs at the beginning)
 ```
 
 ### Details of simulation

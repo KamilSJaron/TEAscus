@@ -1,3 +1,15 @@
+// *********************************************************************
+//
+// TestPopulation.h
+//
+// Created by: Kamil S Jaron, University of Lausanne
+//
+// First started: Februrary, 2018
+// Last edited:
+//
+// *********************************************************************
+
+
 // file: TestPopulation.h
 #ifndef POPULATIONTEST_H
 #define POPULATIONTEST_H

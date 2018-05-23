@@ -1,3 +1,15 @@
+// *********************************************************************
+//
+// TestLocus.h
+//
+// Created by: Kamil S Jaron, University of Lausanne
+//
+// First started: Februrary, 2018
+// Last edited:
+//
+// *********************************************************************
+
+
 #ifndef LOCUSTEST_H
 #define LOCUSTEST_H
 
