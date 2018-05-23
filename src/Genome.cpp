@@ -43,20 +43,19 @@ void Genome::SetParameters() {
 		{std::cout << "Error opening file"; exit (1); }
 
 	char tempChar[100];
-	while(!fin.getline(tempChar, 100).eof()) {
-		// fin.getline(tempChar,100); /// its read somewhere else
-	//	N=strtol(tempChar,0,10);
-		fin.getline(tempChar,100);
-		u=strtod(tempChar,0);
-		fin.getline(tempChar,100);
-		vt=strtod(tempChar,0);
-		fin.getline(tempChar,100);
-		sa=strtod(tempChar,0);
-		fin.getline(tempChar,100);
-		sb=strtod(tempChar,0);
-		fin.getline(tempChar,100);
-		initialTE=strtol(tempChar,0,10);
-	}
+	// remove line with number of individuals
+	fin.getline(tempChar,100);
+	fin.getline(tempChar,100);
+	u=strtod(tempChar,0);
+	fin.getline(tempChar,100);
+	vt=strtod(tempChar,0);
+	fin.getline(tempChar,100);
+	sa=strtod(tempChar,0);
+	fin.getline(tempChar,100);
+	sb=strtod(tempChar,0);
+	fin.getline(tempChar,100);
+	initialTE=strtol(tempChar,0,10);
+
 	fin.close();
 	parametersSet = true;
 }
@@ -151,12 +150,13 @@ void Genome::Transpose() {
 			// roll number of insertions
 			// std::cerr << "rolling ";
 			// rpois = std::poisson_distribution<int>(u);
-			transposeCount = random.NumberOfChiasmas();
-
+			transposeCount = random.Poisson(u);
+			// std::cerr << "transposeCount : " << transposeCount << std::endl;
 			TEs += transposeCount;
+			// std::cerr << "TEs : " << TEs  << " totalLength : " << totalLength << std::endl;
 			if ((TEs / (double)totalLength) > 0.8){
 				std::cerr << "ERROR : an individual with more 80% of genome covered by TEs in simualtion." << std::endl;
-				std::cerr << "Perhaps it would be good to modify parameters to meaningful values." << std::endl;
+				std::cerr << "Perhaps it would be good to modify parameters - decrease transposition rate or increase selection or something." << std::endl;
 				exit (EXIT_FAILURE);
 			}
 
