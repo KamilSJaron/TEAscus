@@ -59,7 +59,7 @@ private:
 
 	int getLocusPosition(Locus *) const;
 	/// sexual offpring - fusion of parents, recombination, creation of two complementary offsprings
-	void generateTwoOspring(int ind, Population * newPopulation, Genome & parent1, Genome & parent2);
+	void generateOspring(int ind, Population * newPopulation, Genome & parent1, Genome & parent2);
 };
 
 

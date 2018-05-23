@@ -127,15 +127,13 @@ void Population::DeleteIndividual(int x) {
 Population * Population::SexualReproduction() {
 	Population * newPopulation = new Population(popSize);
 
-	/// Every two selected parents will generate 4 ofsprings.
-	for (int ind = 0; ind < popSize; ind += 4) {
+	for (int ind = 0; ind < popSize; ind++) {
 		/// selecting parents for ind, ind+1, ind+2, ind+3
 		Genome parent1(GetIndividual(SelectVitalIndividual()));
 		Genome parent2(GetIndividual(SelectVitalIndividual()));
 
 		/// every pair of parents generate 4 offsprings (2 and 2)
-		generateTwoOspring(ind, newPopulation, parent1, parent2);
-		generateTwoOspring(ind + 2, newPopulation, parent1, parent2);
+		generateOspring(ind, newPopulation, parent1, parent2);
 	}
 
 	return newPopulation;
@@ -569,7 +567,7 @@ int Population::getLocusPosition(Locus * loc) const {
 		return loc->GetPosition();
 }
 
-void Population::generateTwoOspring(int ind,
+void Population::generateOspring(int ind,
 									Population * newPopulation,
 									Genome & parent1, Genome & parent2){
 
@@ -617,8 +615,6 @@ void Population::generateTwoOspring(int ind,
 		for (int chiasma_i = 0; chiasma_i < num_of_chiasmas; chiasma_i++){
 			chiasma = chiasmas[chiasma_i]; // load apropriate chiasma
 
-			/// TODO resolve how to make 4, not 2 gametes
-			/// (perhaps a function that will take a reference to new population and basal index to fill)
 			if (crossing == 1) {
 				/// write parent1 to offspring ind
 				while(pos1 < chiasma and pos1 != 0){
@@ -628,14 +624,12 @@ void Population::generateTwoOspring(int ind,
 				}
 				/// write parent2 to offspring ind + 1
 				while(pos2 < chiasma and pos2 != 0){
-					newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par2->GetPosition());
 					loc_par2 = loc_par2->GetNext();
 					pos2 = getLocusPosition(loc_par2);
 				}
 			} else {
 				/// write parent1 to offspring ind + 1
 				while(pos1 < chiasma and pos1 != 0){
-					newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par1->GetPosition());
 					loc_par1 = loc_par1->GetNext();
 					pos1 = getLocusPosition(loc_par1);
 				}
@@ -657,19 +651,7 @@ void Population::generateTwoOspring(int ind,
 				loc_par1 = loc_par1->GetNext();
 				pos1 = getLocusPosition(loc_par1);
 			}
-			/// parent2 to offspring ind + 1
-			while(pos2 != 0){
-				newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par2->GetPosition());
-				loc_par2 = loc_par2->GetNext();
-				pos2 = getLocusPosition(loc_par2);
-			}
 		} else {
-			/// parent1 to offspring ind + 1
-			while(pos1 != 0){
-				newPopulation->GetIndividual(ind+1).GetChromosome(ch).Insert(loc_par1->GetPosition());
-				loc_par1 = loc_par1->GetNext();
-				pos1 = getLocusPosition(loc_par1);
-			}
 			/// parent2 to offspring ind
 			while(pos2 != 0){
 				newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par2->GetPosition());
