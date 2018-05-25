@@ -1,6 +1,6 @@
 // *********************************************************************
 //
-// locus.cpp
+// Transposon.cpp
 //
 // Created by: Elie Dolgin, University of Edinburgh
 // Mofified by: Kamil S. Jaron, University of Lausanne
@@ -12,41 +12,41 @@
 
 #include <iostream>
 
-#include "../include/Locus.h"
+#include "../include/Transposon.h"
 
-//Locus::Locus():
+//Transposon::Transposon():
 //	transElem(0),
 //	next(0)
 //	{}
 
-Locus::Locus(int loc):
+Transposon::Transposon(int loc):
 	location(loc),
 	next(0) { }
 
-Locus::Locus(int loc, Locus * n):
+Transposon::Transposon(int loc, Transposon * n):
 	location(loc),
 	next(n)
 	{}
 
-Locus::Locus(const Locus & rhs) {
+Transposon::Transposon(const Transposon & rhs) {
 	location = rhs.GetPosition();
 	next = rhs.GetNext();
 }
 
-Locus::~Locus() {
+Transposon::~Transposon() {
 	delete next;
 	next = 0;
-	//std::cout << "Locus destructor w/ te: " << GetTransposon().GetLocation() << std::endl;
+	//std::cout << "Transposon destructor w/ te: " << GetTransposon().GetLocation() << std::endl;
 }
 
-int Locus::GetPosition() const {
+int Transposon::GetPosition() const {
 	return location;
 }
 
-Locus * Locus::GetNext() const {
+Transposon * Transposon::GetNext() const {
 	return next;
 }
 
-void Locus::SetNext(Locus * loc) {
+void Transposon::SetNext(Transposon * loc) {
 	next = loc;
 }

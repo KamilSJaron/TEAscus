@@ -1,6 +1,6 @@
 // *********************************************************************
 //
-// TestLocus.h
+// TestTransposon.h
 //
 // Created by: Kamil S Jaron, University of Lausanne
 //
@@ -10,17 +10,17 @@
 // *********************************************************************
 
 
-#ifndef LOCUSTEST_H
-#define LOCUSTEST_H
+#ifndef TRANSPTEST_H
+#define TRANSPTEST_H
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../include/Locus.h"
+#include "../include/Transposon.h"
 
 using namespace std;
 
-class TestLocus : public CPPUNIT_NS :: TestFixture {
-	CPPUNIT_TEST_SUITE (TestLocus);
+class TestTransposon : public CPPUNIT_NS :: TestFixture {
+	CPPUNIT_TEST_SUITE (TestTransposon);
 	CPPUNIT_TEST (testGetPosition);
 	CPPUNIT_TEST_SUITE_END ();
 
@@ -32,7 +32,7 @@ class TestLocus : public CPPUNIT_NS :: TestFixture {
 		void testGetPosition (void);
 
 	private:
-		Locus *locus1, *locus2, *locus3;
+		Transposon *transposon1, *transposon2, *transposon3;
 };
 
 #endif

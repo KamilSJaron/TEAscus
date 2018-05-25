@@ -13,7 +13,7 @@
 #ifndef CHROMOSOME_H_EDOLGIN_TE
 #define CHROMOSOME_H_EDOLGIN_TE
 
-#include "../include/Locus.h"
+#include "../include/Transposon.h"
 
 
 class Chromosome
@@ -26,9 +26,9 @@ class Chromosome
 	unsigned int GetChromTECount() const;
 	unsigned int GetChromNumber() const;
 	unsigned int GetChromCopy() const;
-	Locus * GetHeadLocus() const;
+	Transposon * GetHeadTransposon() const;
 
-	void SetHeadLocus(Locus *);
+	void SetHeadTransposon(Transposon *);
 	void SetChromNumber(int);
 
 	bool TestEmpty(int) const;
@@ -40,7 +40,7 @@ class Chromosome
 
 
   private:
-	Locus * headLocus;
+	Transposon * headTransposon;
 
 	unsigned int chromNumber;	// chromosome number
 	unsigned int chromCopy;		// denotes ploidy

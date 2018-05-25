@@ -1,6 +1,6 @@
 // *********************************************************************
 //
-// locus.h
+// Transposon.h
 //
 // Created by: Elie Dolgin, University of Edinburgh
 // Mofified by: Kamil S. Jaron, University of Lausanne
@@ -10,25 +10,25 @@
 //
 // *********************************************************************
 
-#ifndef LOCUS_H_EDOLGIN_TE
-#define LOCUS_H_EDOLGIN_TE
+#ifndef TRANSPOSON_H_EDOLGIN_TE
+#define TRANSPOSON_H_EDOLGIN_TE
 
-class Locus
+class Transposon
 {
   public:
-	//Locus();
-	Locus(int loc);
-	Locus(int loc, Locus * n);
-	Locus(const Locus &);
-	~Locus();
+	//Transposon();
+	Transposon(int loc);
+	Transposon(int loc, Transposon * n);
+	Transposon(const Transposon &);
+	~Transposon();
 
 	int GetPosition() const;
-	Locus * GetNext() const;
-	void SetNext(Locus * loc);
+	Transposon * GetNext() const;
+	void SetNext(Transposon * loc);
 
   private:
 	int location;
-	Locus * next;
+	Transposon * next;
 
 };
 

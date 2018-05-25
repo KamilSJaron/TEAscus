@@ -1,5 +1,5 @@
 // simulator Transposon
-// testing class Locus
+// testing class Population
 
 #include "../include/TestPopulation.h"
 #include "../include/Genome.h"

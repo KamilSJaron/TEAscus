@@ -1,5 +1,5 @@
 // simulator Transposon
-// testing class Locus
+// testing class Chromosome
 
 #include "../include/TestChromosome.h"
 

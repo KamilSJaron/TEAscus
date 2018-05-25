@@ -18,26 +18,26 @@ Chromosome::Chromosome():
 	chromNumber(0),
 	chromCopy(0)
 	{
-		headLocus = 0;
+		headTransposon = 0;
 	}
 
 Chromosome::Chromosome(int num, int copy):
 	chromNumber(num),
 	chromCopy(copy)
 	{
-	headLocus = 0;
+	headTransposon = 0;
 	}
 
 Chromosome::~Chromosome()
 {
-	delete headLocus;
-	headLocus = 0;
+	delete headTransposon;
+	headTransposon = 0;
 }
 
 unsigned int Chromosome::GetChromTECount() const
 {
 	unsigned int count = 0;
-	Locus * current = headLocus;
+	Transposon * current = headTransposon;
 	while (current != 0)
 	{
 		count++;
@@ -56,14 +56,14 @@ unsigned int Chromosome::GetChromCopy() const
 	return chromCopy;
 }
 
-Locus * Chromosome::GetHeadLocus() const
+Transposon * Chromosome::GetHeadTransposon() const
 {
-	return headLocus;
+	return headTransposon;
 }
 
-void Chromosome::SetHeadLocus(Locus * newHead)
+void Chromosome::SetHeadTransposon(Transposon * newHead)
 {
-	headLocus = newHead;
+	headTransposon = newHead;
 }
 
 void Chromosome::SetChromNumber(int num) {
@@ -72,7 +72,7 @@ void Chromosome::SetChromNumber(int num) {
 
 bool Chromosome::TestEmpty(int site) const
 {
-	Locus * current = headLocus;
+	Transposon * current = headTransposon;
 
 	while ((current != 0) && (current->GetPosition() < site))
 		current = current->GetNext();
@@ -87,47 +87,47 @@ bool Chromosome::TestEmpty(int site) const
 
 void Chromosome::Insert (int location)
 {
-	Locus * newLocus = new Locus (location);
+	Transposon * newTransposon = new Transposon (location);
 
-	if (headLocus == 0)
+	if (headTransposon == 0)
 	{
-		headLocus = newLocus;
+		headTransposon = newTransposon;
 		return;
 	}
 
 	// if the new inserted locus is upstream of head, then make it the new head
-	if (headLocus->GetPosition() > location)
+	if (headTransposon->GetPosition() > location)
 	{
-		newLocus->SetNext(headLocus);
-		headLocus = newLocus;
+		newTransposon->SetNext(headTransposon);
+		headTransposon = newTransposon;
 		return;
 	}
 
 
-	Locus * currentLocus = headLocus;
-	Locus * nextLocus = 0;
+	Transposon * currentTransposon = headTransposon;
+	Transposon * nextTransposon = 0;
 	int nextLocation = 0;
 
 	for(;;)
 	{
 		// if there is no next, put new inserted locus at the end
-		if (currentLocus->GetNext() == 0)
+		if (currentTransposon->GetNext() == 0)
 		{
-			currentLocus->SetNext(newLocus);
+			currentTransposon->SetNext(newTransposon);
 			return;
 		}
 
-		nextLocus = currentLocus->GetNext();
-		nextLocation = nextLocus->GetPosition();
+		nextTransposon = currentTransposon->GetNext();
+		nextLocation = nextTransposon->GetPosition();
 		// std::cerr << nextLocation << std::endl;
 
 		if (nextLocation > location)
 		{
-			currentLocus->SetNext(newLocus);
-			newLocus->SetNext(nextLocus);
+			currentTransposon->SetNext(newTransposon);
+			newTransposon->SetNext(nextTransposon);
 			return;
 		}
-		currentLocus = nextLocus;
+		currentTransposon = nextTransposon;
 	}
 }
 
@@ -137,10 +137,10 @@ void Chromosome::Delete(int pos) {
 		return;
 	}
 
-	Locus * current = headLocus;
+	Transposon * current = headTransposon;
 
-	if (pos == 1) { // delete headLocus
-		headLocus = headLocus->GetNext();
+	if (pos == 1) { // delete headTransposon
+		headTransposon = headTransposon->GetNext();
 		current->SetNext(0);
 		delete current;
 		current = 0;
@@ -150,7 +150,7 @@ void Chromosome::Delete(int pos) {
 	for (int i=2; i<pos; i++)
 		current = current->GetNext();
 
-	Locus * next = current->GetNext();
+	Transposon * next = current->GetNext();
 	current->SetNext(next->GetNext());
 	next->SetNext(0);
 	delete next;
@@ -159,7 +159,7 @@ void Chromosome::Delete(int pos) {
 }
 
 void Chromosome::ListChromSites() const {
-	Locus * loc = headLocus;
+	Transposon * loc = headTransposon;
 
 	std::cerr << "Chromosome " << chromNumber << " : ";
 	if (loc != 0) {

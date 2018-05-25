@@ -91,7 +91,7 @@ void Population::Initialize() {
 	/// copy individual 0 to all other individuals
 	for (int a=1; a < popSize; a++) {
 		for (int i=1; i <= Genome::numberOfChromosomes; i++) {
-			Locus * current = GetIndividual(0).GetChromosome(i).GetHeadLocus();
+			Transposon * current = GetIndividual(0).GetChromosome(i).GetHeadTransposon();
 
 			while (current != 0) {
 				GetIndividual(a).GetChromosome(i).Insert(current->GetPosition());
@@ -119,8 +119,8 @@ int Population::SelectVitalIndividual(){
 
 void Population::DeleteIndividual(int x) {
 	for (int i=1; i <= Genome::numberOfChromosomes; i++) {
-		delete genoVector.at(x).GetChromosome(i).GetHeadLocus();
-		genoVector.at(x).GetChromosome(i).SetHeadLocus(0);
+		delete genoVector.at(x).GetChromosome(i).GetHeadTransposon();
+		genoVector.at(x).GetChromosome(i).SetHeadTransposon(0);
 	}
 }
 
@@ -149,7 +149,7 @@ Population * Population::AsexualReproduction() {
 
 		/// not entiraly sure what this bit does
 		for (int i=1; i <= Genome::numberOfChromosomes; i++) {
-			Locus * current = parent.GetChromosome(i).GetHeadLocus();
+			Transposon * current = parent.GetChromosome(i).GetHeadTransposon();
 			while (current != 0) {
 				newPopulation->GetIndividual(a).GetChromosome(i).Insert(current->GetPosition());
 				current = current->GetNext();
@@ -326,14 +326,14 @@ void Population::RecordPopulation(const char * fileName, int generation)
 	fout << generation << "\n";
 
 	int size = GetPopSize();
-	Locus * loc = GetIndividual(0).GetChromosome(1).GetHeadLocus();
+	Transposon * loc = GetIndividual(0).GetChromosome(1).GetHeadTransposon();
 
 	for (int i=0; i < size; i++) {
 		if (GetIndividual(i).GetGenomeTECount()==0)
 			fout << ".\n";
 		else {
 			for (int j=1; j <= Genome::numberOfChromosomes; j++) {
-				loc = GetIndividual(i).GetChromosome(j).GetHeadLocus();
+				loc = GetIndividual(i).GetChromosome(j).GetHeadTransposon();
 				if (loc != 0) {
 					while (loc->GetNext() != 0) {
 						fout << j << "\n" << loc->GetPosition() << "\n";
@@ -560,7 +560,7 @@ void Population::SummaryStatistics(int numFirst, int numLast)
 /// PRIVATE ///
 ///////////////
 
-int Population::getLocusPosition(Locus * loc) const {
+int Population::getTransposonPosition(Transposon * loc) const {
 	if (loc == 0)
 		return 0; /// i.e. chromosome is TEless
 	else
@@ -571,7 +571,7 @@ void Population::generateOspring(int ind,
 									Population * newPopulation,
 									Genome & parent1, Genome & parent2){
 
-	Locus *loc_par1, *loc_par2;
+	Transposon *loc_par1, *loc_par2;
 	int pos1 = 0, pos2 = 0;
 	std::vector<int> chiasmas;
 	int chiasma = 0, num_of_chiasmas = 0;
@@ -605,11 +605,11 @@ void Population::generateOspring(int ind,
 		}
 
 		/// load head loci of chromosomes ch of selected parents
-		loc_par1 = parent1.GetChromosome(ch).GetHeadLocus();
-		loc_par2 = parent2.GetChromosome(ch).GetHeadLocus();
+		loc_par1 = parent1.GetChromosome(ch).GetHeadTransposon();
+		loc_par2 = parent2.GetChromosome(ch).GetHeadTransposon();
 		/// get their location of the chromosome
-		pos1 = getLocusPosition(loc_par1);
-		pos2 = getLocusPosition(loc_par2);
+		pos1 = getTransposonPosition(loc_par1);
+		pos2 = getTransposonPosition(loc_par2);
 
 		/// for each chiasma write parental TEs to appropriate offpring determined by variable crossing
 		for (int chiasma_i = 0; chiasma_i < num_of_chiasmas; chiasma_i++){
@@ -620,24 +620,24 @@ void Population::generateOspring(int ind,
 				while(pos1 < chiasma and pos1 != 0){
 					newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par1->GetPosition());
 					loc_par1 = loc_par1->GetNext();
-					pos1 = getLocusPosition(loc_par1);
+					pos1 = getTransposonPosition(loc_par1);
 				}
 				/// write parent2 to offspring ind + 1
 				while(pos2 < chiasma and pos2 != 0){
 					loc_par2 = loc_par2->GetNext();
-					pos2 = getLocusPosition(loc_par2);
+					pos2 = getTransposonPosition(loc_par2);
 				}
 			} else {
 				/// write parent1 to offspring ind + 1
 				while(pos1 < chiasma and pos1 != 0){
 					loc_par1 = loc_par1->GetNext();
-					pos1 = getLocusPosition(loc_par1);
+					pos1 = getTransposonPosition(loc_par1);
 				}
 				/// write parent2 to offspring ind
 				while(pos2 < chiasma and pos2 != 0){
 					newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par2->GetPosition());
 					loc_par2 = loc_par2->GetNext();
-					pos2 = getLocusPosition(loc_par2);
+					pos2 = getTransposonPosition(loc_par2);
 				}
 			}
 
@@ -649,14 +649,14 @@ void Population::generateOspring(int ind,
 			while(pos1 != 0){
 				newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par1->GetPosition());
 				loc_par1 = loc_par1->GetNext();
-				pos1 = getLocusPosition(loc_par1);
+				pos1 = getTransposonPosition(loc_par1);
 			}
 		} else {
 			/// parent2 to offspring ind
 			while(pos2 != 0){
 				newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par2->GetPosition());
 				loc_par2 = loc_par2->GetNext();
-				pos2 = getLocusPosition(loc_par2);
+				pos2 = getTransposonPosition(loc_par2);
 			}
 		}
 	}

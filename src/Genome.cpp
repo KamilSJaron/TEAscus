@@ -77,11 +77,11 @@ Genome::Genome(const Genome & rhs) {
 	if (!parametersSet)
 		SetParameters();
 
-	Locus * current;
+	Transposon * current;
 
 	for (int i=1; i <= numberOfChromosomes; i++){
 		chromoVector.at(i-1).SetChromNumber(i);
-		current = rhs.GetChromosome(i).GetHeadLocus();
+		current = rhs.GetChromosome(i).GetHeadTransposon();
 		while (current != 0) {
 			chromoVector.at(i-1).Insert(current->GetPosition());
 			current = current->GetNext();
@@ -139,13 +139,13 @@ void Genome::Transpose() {
 	int TEs = GetGenomeTECount();
 	// std::cerr << "Proportion of gneome covered by TEs : " << TEs / (double)totalLength << std::endl;
 
-	Locus * current;
+	Transposon * current;
 	bool roll_again = true;
 	// std::cerr << "setup" << std::endl;
 
 	for (int ch=1; ch <= numberOfChromosomes; ch++){
 		// std::cerr << "ch " << ch << std::endl;
-		current = GetChromosome(ch).GetHeadLocus();
+		current = GetChromosome(ch).GetHeadTransposon();
 		while (current != 0) {
 			// roll number of insertions
 			// std::cerr << "rolling ";
