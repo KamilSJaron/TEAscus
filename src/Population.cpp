@@ -128,11 +128,10 @@ Population * Population::SexualReproduction() {
 	Population * newPopulation = new Population(popSize);
 
 	for (int ind = 0; ind < popSize; ind++) {
-		/// selecting parents for ind, ind+1, ind+2, ind+3
+		/// selecting parents for ind
 		Genome parent1(GetIndividual(SelectVitalIndividual()));
 		Genome parent2(GetIndividual(SelectVitalIndividual()));
 
-		/// every pair of parents generate 4 offsprings (2 and 2)
 		generateOffspring(ind, newPopulation, parent1, parent2);
 	}
 
@@ -160,10 +159,16 @@ Population * Population::AsexualReproduction() {
 	return newPopulation;
 }
 
-void Population::TranspositionAndLoss()
+void Population::MitoticTransposition()
 {
 	for (int i=0; i < popSize; i++) {
-		genoVector.at(i).Transpose();
+		genoVector.at(i).MitoticTranspose();
+	}
+}
+
+void Population::Exision()
+{
+	for (int i=0; i < popSize; i++) {
 		genoVector.at(i).ElementLoss();
 	}
 }
@@ -567,9 +572,13 @@ int Population::getTransposonPosition(Transposon * loc) const {
 		return loc->GetPosition();
 }
 
+/// Here it deserves a bit of explantion.
+/// Parents are copied because I need them to get new transposons
+/// as they represent newly reformed diploid ascus
+/// (maybe it would be more elegant to have a ascus class)
 void Population::generateOffspring(int ind,
 									Population * newPopulation,
-									Genome & parent1, Genome & parent2){
+									Genome parent1, Genome parent2){
 
 	Transposon *loc_par1, *loc_par2;
 	int pos1 = 0, pos2 = 0;
@@ -581,6 +590,10 @@ void Population::generateOffspring(int ind,
 	///							offspring2 -/\- parent1
 	/// crossing == false --> 	offspring1 ---- parent1 &
 	///							offspring2 ---- parent2
+
+	// int ascus_init_TEs = parent1.GetGenomeTECount() + parent2.GetGenomeTECount();
+
+	/// TRANSPOSE WITHING ASCUS
 
 	/// every chromosome will be rocombined separatedly
 	for (int ch = 1; ch <= Genome::numberOfChromosomes; ch++) {
@@ -616,19 +629,19 @@ void Population::generateOffspring(int ind,
 			chiasma = chiasmas[chiasma_i]; // load apropriate chiasma
 
 			if (crossing == 1) {
-				/// write parent1 to offspring ind
+				///  parent1 to offspring ind
 				while(pos1 < chiasma and pos1 != 0){
 					newPopulation->GetIndividual(ind).GetChromosome(ch).Insert(loc_par1->GetPosition());
 					loc_par1 = loc_par1->GetNext();
 					pos1 = getTransposonPosition(loc_par1);
 				}
-				/// write parent2 to offspring ind + 1
+				/// parent2
 				while(pos2 < chiasma and pos2 != 0){
 					loc_par2 = loc_par2->GetNext();
 					pos2 = getTransposonPosition(loc_par2);
 				}
 			} else {
-				/// write parent1 to offspring ind + 1
+				/// parent1
 				while(pos1 < chiasma and pos1 != 0){
 					loc_par1 = loc_par1->GetNext();
 					pos1 = getTransposonPosition(loc_par1);

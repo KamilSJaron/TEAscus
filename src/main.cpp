@@ -133,7 +133,7 @@ int main(int argc, char **argv){
 
 		Population * pop = new Population(N);
 		// cerr << "Population created" << endl;
-		Population * temp;
+		Population * new_population;
 
 		int size = pop->GetPopSize();
 		// cerr << "Population size : " << size << endl;
@@ -145,9 +145,11 @@ int main(int argc, char **argv){
 			pop->PrintParameters();
 		}
 
+		/// Burn in serves to generate some variability
 		for (int gen = 1; gen <= burnin; gen++){
 			// cerr << "Runnin burnin" << endl;
-			pop->TranspositionAndLoss();
+			pop->MitoticTransposition();
+			pop->Exision();
 		}
 
 		pop->SummaryStatistics(detailed_out, 0);
@@ -165,17 +167,19 @@ int main(int argc, char **argv){
 			// cerr << "Reproducing " << endl;
 			// REPRODUCTION
 			if ( gen % sex_report_period == 0 and sex ){
-				temp = pop->SexualReproduction();
+				new_population = pop->SexualReproduction();
 			} else {
-				temp = pop->AsexualReproduction();
+				new_population = pop->AsexualReproduction();
+				/// mitotic transpostion practically happens in the reproduced individuals
+				new_population->MitoticTransposition();
 			}
 
 			delete pop;
-			pop = temp;
+			pop = new_population;
 
-			// cerr << "Transposing " << endl;
-			// TRANSPOSITION & LOSS
-			pop->TranspositionAndLoss();
+			// cerr << "Transposon loss " << endl;
+			/// LOSS
+			pop->Exision();
 
 			/// printing results after transposition
 			cerr << ".";

@@ -130,14 +130,15 @@ void Genome::SetChromosome(Chromosome & c) {
 	chromoVector.at(num - 1) = c;
 }
 
-void Genome::Transpose() {
+void Genome::MitoticTranspose() {
 	// std::cerr << "Transposing" << std::endl;
 	int rolled_chromosome = 0, rolled_position_on_ch = 0;
-	unsigned int transposeCount = 0;
 	unsigned int totalLength = chromLength * numberOfChromosomes;
 
 	int TEs = GetGenomeTECount();
 	// std::cerr << "Proportion of gneome covered by TEs : " << TEs / (double)totalLength << std::endl;
+	// roll how many new transposons will be generated
+	TEs += random.Poisson(u * TEs);
 
 	Transposon * current;
 	bool roll_again = true;

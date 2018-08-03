@@ -35,7 +35,7 @@ public:
 
 	void SetChromosome(Chromosome&);
 
-	void Transpose();
+	void MitoticTranspose();
 	void ElementLoss();
 	void Recombination();
 	//Ascus MakeAscus();
