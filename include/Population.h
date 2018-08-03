@@ -59,7 +59,7 @@ private:
 
 	int getTransposonPosition(Transposon *) const;
 	/// sexual offpring - fusion of parents, recombination, creation of two complementary offsprings
-	void generateOspring(int ind, Population * newPopulation, Genome & parent1, Genome & parent2);
+	void generateOffspring(int ind, Population * newPopulation, Genome & parent1, Genome & parent2);
 };
 
 

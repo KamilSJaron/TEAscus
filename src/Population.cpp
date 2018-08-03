@@ -133,7 +133,7 @@ Population * Population::SexualReproduction() {
 		Genome parent2(GetIndividual(SelectVitalIndividual()));
 
 		/// every pair of parents generate 4 offsprings (2 and 2)
-		generateOspring(ind, newPopulation, parent1, parent2);
+		generateOffspring(ind, newPopulation, parent1, parent2);
 	}
 
 	return newPopulation;
@@ -567,7 +567,7 @@ int Population::getTransposonPosition(Transposon * loc) const {
 		return loc->GetPosition();
 }
 
-void Population::generateOspring(int ind,
+void Population::generateOffspring(int ind,
 									Population * newPopulation,
 									Genome & parent1, Genome & parent2){
 
