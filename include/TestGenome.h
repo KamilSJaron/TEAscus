@@ -22,6 +22,7 @@ class TestGenome : public CPPUNIT_NS :: TestFixture {
 	CPPUNIT_TEST_SUITE (TestGenome);
 	CPPUNIT_TEST (testConstructor);
 	CPPUNIT_TEST (testTransposonIteration);
+	CPPUNIT_TEST (testMitoticTranspose);
 	CPPUNIT_TEST_SUITE_END ();
 
 	public:
@@ -31,6 +32,7 @@ class TestGenome : public CPPUNIT_NS :: TestFixture {
 	protected:
 		void testConstructor (void);
 		void testTransposonIteration (void);
+		void testMitoticTranspose (void);
 
 	private:
 		Genome *ind1, *ind2, *ind3;

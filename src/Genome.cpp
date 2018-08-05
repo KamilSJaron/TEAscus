@@ -134,50 +134,35 @@ void Genome::MitoticTranspose() {
 	// std::cerr << "Transposing" << std::endl;
 	int rolled_chromosome = 0, rolled_position_on_ch = 0;
 	unsigned int totalLength = chromLength * numberOfChromosomes;
+	bool roll_again;
 
 	int TEs = GetGenomeTECount();
-	// std::cerr << "Proportion of gneome covered by TEs : " << TEs / (double)totalLength << std::endl;
-	// roll how many new transposons will be generated
-	TEs += random.Poisson(u * TEs);
+	/// roll how many new transposons will be generated
+	int transposeCount = random.Poisson(u * TEs);
+	TEs += transposeCount;
+	// std::cerr << "TEs: " << TEs << std::endl;
+	// std::cerr << "totalLength: " << (double)totalLength << std::endl;
+	// std::cerr << "transposeCount: " << transposeCount << std::endl;
 
-	Transposon * current;
-	bool roll_again = true;
-	// std::cerr << "setup" << std::endl;
+	// std::cerr << "TEs : " << TEs  << " totalLength : " << totalLength << std::endl;
+	if ((TEs / (double)totalLength) > 0.8){
+		std::cerr << "ERROR : an individual with more 80% of genome covered by TEs in simualtion." << std::endl;
+		std::cerr << "Perhaps it would be good to modify parameters - decrease transposition rate or increase selection or something." << std::endl;
+		exit (EXIT_FAILURE);
+	}
 
-	for (int ch=1; ch <= numberOfChromosomes; ch++){
-		// std::cerr << "ch " << ch << std::endl;
-		current = GetChromosome(ch).GetHeadTransposon();
-		while (current != 0) {
-			// roll number of insertions
-			// std::cerr << "rolling ";
-			// rpois = std::poisson_distribution<int>(u);
-			transposeCount = random.Poisson(u);
-			// std::cerr << "transposeCount : " << transposeCount << std::endl;
-			TEs += transposeCount;
-			// std::cerr << "TEs : " << TEs  << " totalLength : " << totalLength << std::endl;
-			if ((TEs / (double)totalLength) > 0.8){
-				std::cerr << "ERROR : an individual with more 80% of genome covered by TEs in simualtion." << std::endl;
-				std::cerr << "Perhaps it would be good to modify parameters - decrease transposition rate or increase selection or something." << std::endl;
-				exit (EXIT_FAILURE);
-			}
+	for (int t = 0; t < transposeCount; t++) {
+		// std::cerr << "transposing locus" << std::endl;
+		// roll where
+		roll_again = true;
+		do {
+			random.ChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
+			// std::cerr << "stuff rolled, testing" << rolled_chromosome << " at position " << rolled_position_on_ch << std::endl;
+			roll_again = !GetChromosome(rolled_chromosome).TestEmpty(rolled_position_on_ch);
+			// std::cerr << "CH: " << rolled_chromosome << " TEs: " << GetChromosome(rolled_chromosome).GetChromTECount() << std::endl;
+		} while (roll_again);
 
-			for (int t = 0; t < transposeCount; t++) {
-				// std::cerr << "transposing locus" << std::endl;
-				// roll where
-				roll_again = true;
-				do {
-					random.ChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
-					// std::cerr << "stuff rolled, testing" << rolled_chromosome << " at position " << rolled_position_on_ch << std::endl;
-					roll_again = !GetChromosome(rolled_chromosome).TestEmpty(rolled_position_on_ch);
-					// std::cerr << "CH: " << rolled_chromosome << " TEs: " << GetChromosome(rolled_chromosome).GetChromTECount() << std::endl;
-				} while (roll_again);
-
-				chromoVector.at(rolled_chromosome - 1).Insert(rolled_position_on_ch);
-			}
-			// std::cerr << "GetNext ";
-			current = current->GetNext();
-			// std::cerr << "worked" << std::endl;
-		}
+		chromoVector.at(rolled_chromosome - 1).Insert(rolled_position_on_ch);
 	}
 }
 

@@ -11,6 +11,7 @@ using namespace std;
 
 void TestGenome::setUp(void) {
 	Genome::SetParameters();
+	Genome::u = 0.1;
 	ind1 = new Genome();
 	Genome nice_folk;
 	ind2 = new Genome( nice_folk );
@@ -39,6 +40,25 @@ void TestGenome::testTransposonIteration(void){
 			current = current->GetNext();
 		}
 	} // for
+}
+
+void TestGenome::testMitoticTranspose(void){
+	unsigned int init_TEs = 100;
+	int rolled_chromosome = 0, rolled_position_on_ch = 0;
+	Random random;
+
+	/// place random 100 TEs in ind1
+	for (int j=0; j < init_TEs; j++) {
+		do {
+			random.ChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
+		} while ( !ind1->GetChromosome(rolled_chromosome).TestEmpty(rolled_position_on_ch));
+		ind1->GetChromosome(rolled_chromosome).Insert(rolled_position_on_ch);
+	}
+
+	/// given high u and 100 TEs, at least one got to jump
+	ind1->MitoticTranspose();
+
+	CPPUNIT_ASSERT(ind1->GetGenomeTECount() > init_TEs);
 }
 
 // void TestGenome::testRandomness(void){
