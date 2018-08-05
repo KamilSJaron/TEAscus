@@ -11,7 +11,7 @@ using namespace std;
 
 void TestPopulation::setUp(void) {
 	Genome::initialTE = 3;
-	Genome::u = 0.001;
+	Genome::u_mitosis = 0.001;
 	pop = new Population(20);
 	pop->Initialize();
 }

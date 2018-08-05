@@ -21,7 +21,8 @@
 #define RECOMBINATION 5.4
 
 //int Genome::N = 0;
-double Genome::u = 0;
+double Genome::u_mitosis = 0;
+double Genome::u_meiosis = 0;
 double Genome::vt = 0;
 double Genome::sa = 0;
 double Genome::sb = 0;
@@ -46,7 +47,9 @@ void Genome::SetParameters() {
 	// remove line with number of individuals
 	fin.getline(tempChar,100);
 	fin.getline(tempChar,100);
-	u=strtod(tempChar,0);
+	u_mitosis=strtod(tempChar,0);
+	fin.getline(tempChar,100);
+	u_meiosis=strtod(tempChar,0);
 	fin.getline(tempChar,100);
 	vt=strtod(tempChar,0);
 	fin.getline(tempChar,100);
@@ -130,15 +133,26 @@ void Genome::SetChromosome(Chromosome & c) {
 	chromoVector.at(num - 1) = c;
 }
 
+void Genome::insertTE() {
+	int rolled_chromosome = 0, rolled_position_on_ch = 0;
+	bool roll_again = true;
+	do {
+		random.ChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
+		// std::cerr << "stuff rolled, testing" << rolled_chromosome << " at position " << rolled_position_on_ch << std::endl;
+		roll_again = !GetChromosome(rolled_chromosome).TestEmpty(rolled_position_on_ch);
+		// std::cerr << "CH: " << rolled_chromosome << " TEs: " << GetChromosome(rolled_chromosome).GetChromTECount() << std::endl;
+	} while (roll_again);
+
+	chromoVector.at(rolled_chromosome - 1).Insert(rolled_position_on_ch);
+}
+
 void Genome::MitoticTranspose() {
 	// std::cerr << "Transposing" << std::endl;
-	int rolled_chromosome = 0, rolled_position_on_ch = 0;
 	unsigned int totalLength = chromLength * numberOfChromosomes;
-	bool roll_again;
 
 	int TEs = GetGenomeTECount();
 	/// roll how many new transposons will be generated
-	int transposeCount = random.Poisson(u * TEs);
+	int transposeCount = random.Poisson(u_mitosis * TEs);
 	TEs += transposeCount;
 	// std::cerr << "TEs: " << TEs << std::endl;
 	// std::cerr << "totalLength: " << (double)totalLength << std::endl;
@@ -152,17 +166,7 @@ void Genome::MitoticTranspose() {
 	}
 
 	for (int t = 0; t < transposeCount; t++) {
-		// std::cerr << "transposing locus" << std::endl;
-		// roll where
-		roll_again = true;
-		do {
-			random.ChromosomeAndPosition(& rolled_chromosome, & rolled_position_on_ch);
-			// std::cerr << "stuff rolled, testing" << rolled_chromosome << " at position " << rolled_position_on_ch << std::endl;
-			roll_again = !GetChromosome(rolled_chromosome).TestEmpty(rolled_position_on_ch);
-			// std::cerr << "CH: " << rolled_chromosome << " TEs: " << GetChromosome(rolled_chromosome).GetChromTECount() << std::endl;
-		} while (roll_again);
-
-		chromoVector.at(rolled_chromosome - 1).Insert(rolled_position_on_ch);
+		insertTE();
 	}
 }
 

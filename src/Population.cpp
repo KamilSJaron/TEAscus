@@ -192,7 +192,9 @@ void Population::SaveParameters(const char * fileName) {
 
 	fout << "\n" << asctime (timeinfo) << "\n";
 	fout << "N = " << popSize << "\n";
-	fout << "u = " << Genome::u << ", v = " << Genome::vt << "\n";
+	fout 	<< "u_mitosis = " << Genome::u_mitosis
+			<< "u_meiosis = " << Genome::u_meiosis
+			<< ", v = " << Genome::vt << "\n";
 	fout << "initialTE = " << Genome::initialTE << "\n";
 	fout << "a = " << Genome::sa << ", b = " << Genome::sb << "\n";
 	fout << "chrom# = " << Genome::numberOfChromosomes << ", ploidy# = haploid\n" << "\n";
@@ -213,7 +215,8 @@ void Population::PrintParameters(){
 
 	std::cerr << asctime (timeinfo) << std::endl;
 	std::cerr << "Population Size = " << popSize << std::endl;
-	std::cerr << "Transposition Rate = " << Genome::u << std::endl;
+	std::cerr << "Transposition Rate during mitosis = " << Genome::u_mitosis << std::endl;
+	std::cerr << "Transposition Rate during meiosis = " << Genome::u_meiosis << std::endl;
 	std::cerr << "Excision Rate = " << Genome::vt << std::endl;
 	std::cerr << "Initial TE count = " << Genome::initialTE << std::endl;
 	std::cerr << "Selection parameters, a = " << Genome::sa << ", b = " << Genome::sb << std::endl;
@@ -591,8 +594,17 @@ void Population::generateOffspring(int ind,
 	/// crossing == false --> 	offspring1 ---- parent1 &
 	///							offspring2 ---- parent2
 
-	// int ascus_init_TEs = parent1.GetGenomeTECount() + parent2.GetGenomeTECount();
-
+	int ascus_init_TEs = parent1.GetGenomeTECount() + parent2.GetGenomeTECount();
+	/// generate new TEs as transposition rate (so far u) and number of TEs in ascus
+	int new_TEs_in_ascus = random.Poisson(Genome::u_meiosis * ascus_init_TEs);
+	/// Right now it places TE with 50% probability to one of the backgrounds
+	for (int new_TE = 0; new_TE < new_TEs_in_ascus; new_TE++){
+		if ( random.TossACoin() ){
+			parent1.insertTE();
+		} else {
+			parent2.insertTE();
+		}
+	}
 	/// TRANSPOSE WITHING ASCUS
 
 	/// every chromosome will be rocombined separatedly

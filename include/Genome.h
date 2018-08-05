@@ -35,6 +35,7 @@ public:
 
 	void SetChromosome(Chromosome&);
 
+	void insertTE();
 	void MitoticTranspose();
 	void ElementLoss();
 	void Recombination();
@@ -50,7 +51,8 @@ public:
 //	static int N;					// Population size
 	static double sa;				// selection coefficient alpha under synergistic epistasis
 	static double sb;				// selection coefficient beta under synergistic epistasis
-	static double u;				// transposition rate
+	static double u_mitosis;		// transposition rate for mitosis
+	static double u_meiosis;		// transposition rate for meiosis
 	static double vt;				// rate of element loss
 	//static double rGenome;		// genome wide recombination rate between TE sites
 	static int initialTE;

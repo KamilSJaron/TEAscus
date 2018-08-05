@@ -11,7 +11,7 @@ using namespace std;
 
 void TestGenome::setUp(void) {
 	Genome::SetParameters();
-	Genome::u = 0.1;
+	Genome::u_mitosis = 0.1;
 	ind1 = new Genome();
 	Genome nice_folk;
 	ind2 = new Genome( nice_folk );
