@@ -68,7 +68,7 @@ Genome::Genome() {
 	if (!parametersSet)
 		SetParameters();
 
-	random = Random::Random();
+	random = Random();
 	for (int i=1; i <= numberOfChromosomes; i++) {
 		chromoVector.at(i-1).SetChromNumber(i);
 	}

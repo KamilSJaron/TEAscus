@@ -29,7 +29,7 @@ Population::Population(int size)
 	rind = std::uniform_int_distribution<int>(0, popSize - 1);
 	runif = std::uniform_real_distribution<double>(0.0,1.0);
 
-	random = Random::Random();
+	random = Random();
 }
 
 Population::~Population()
@@ -193,7 +193,7 @@ void Population::SaveParameters(const char * fileName) {
 	fout << "\n" << asctime (timeinfo) << "\n";
 	fout << "N = " << popSize << "\n";
 	fout 	<< "u_mitosis = " << Genome::u_mitosis
-			<< "u_meiosis = " << Genome::u_meiosis
+			<< ", u_meiosis = " << Genome::u_meiosis
 			<< ", v = " << Genome::vt << "\n";
 	fout << "initialTE = " << Genome::initialTE << "\n";
 	fout << "a = " << Genome::sa << ", b = " << Genome::sb << "\n";
@@ -310,7 +310,6 @@ void Population::SummaryStatistics(const char * fileName, int generation)
 	std::cout << "GENERATION [" << generation << "]" << std::endl;
 	std::cout << "Mean copy number per individual: " << meanCopyNumber << std::endl;
 	std::cout << "Variance in copy number between individuals: " << varCopyNumber << std::endl;
-	std::cout << "Proportion affecting fitness: ";
 	std::cout << "Mean element frequency: " << meanFreq << std::endl;
 	std::cout << "Variance in element frequency: " << varFreq << std::endl;
 	std::cout << "Fraction of loci with zero frequency: " << fractionEmpty << std::endl;

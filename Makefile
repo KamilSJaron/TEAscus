@@ -23,13 +23,13 @@ $(PRG) : src/main.o $(GIT_HEADER) $(OBJ)
 # .git/COMMIT_EDITMSG is a file that get updated with every commit
 # .git/HEAD is a file that get updated with every switch of branches
 # if any of those have changed, commit in binary have to be updated
-$(GIT_HEADER) : ../.git/HEAD ../.git/COMMIT_EDITMSG
+$(GIT_HEADER) : ../.git/modules/TEAscus/HEAD ../.git/modules/TEAscus/COMMIT_EDITMSG
 	echo "#define GITVERSION \"$(shell git rev-parse HEAD)\"" > $@
 
 # if repository is cloned, it does not contain last commit message
 # to make a git header regarless if absence of the last commit message
 # we create a blank file with last commit message
-../.git/COMMIT_EDITMSG :
+../.git/modules/TEAscus/COMMIT_EDITMSG :
 	touch $@
 
 # TESTING
