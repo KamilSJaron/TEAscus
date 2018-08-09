@@ -42,6 +42,7 @@ int main(int argc, char **argv){
 	int burnin = 20;
 	int index;
 	int c;
+	double prerepTEs = 0, postrepTEs = 0, postexTEs = 0;
 
 	opterr = 0;
 
@@ -119,7 +120,7 @@ int main(int argc, char **argv){
 	// return 0;
 
 	for (int run=1; run <= replicates; run++) {
-		cerr << "Run : " << run << endl;
+		std::cerr << "Running simualtion: " << run << endl;
 		std::ifstream fin(input_file);
 			if (! fin.is_open())
 				{ cerr << "Error opening file : " << input_file << endl; exit (1); }
@@ -155,7 +156,6 @@ int main(int argc, char **argv){
 		pop->SummaryStatistics(detailed_out, 0);
 
 		for (int gen = 1; gen <= generations; gen++) {
-			// cerr << "Running generation " << gen << "." << endl;
 
 			if (pop->GetPopulationTECount() == 0 or ((double)pop->GetPopulationTECount()/(double)size) > 150.0) {
 				// cerr << "No TEs at generation [" << gen << "]." << endl << endl;
@@ -166,6 +166,8 @@ int main(int argc, char **argv){
 
 			// cerr << "Reproducing " << endl;
 			// REPRODUCTION
+			int popSize = pop->GetPopSize();
+			prerepTEs = (double)pop->GetPopulationTECount() / popSize;
 			if ( gen % sex_report_period == 0 and sex ){
 				new_population = pop->SexualReproduction();
 			} else {
@@ -173,6 +175,7 @@ int main(int argc, char **argv){
 				/// mitotic transpostion practically happens in the reproduced individuals
 				new_population->MitoticTransposition();
 			}
+			postrepTEs = (double)new_population->GetPopulationTECount() / popSize;
 
 			delete pop;
 			pop = new_population;
@@ -180,17 +183,19 @@ int main(int argc, char **argv){
 			// cerr << "Transposon loss " << endl;
 			/// LOSS
 			pop->Exision();
+			postexTEs = (double)pop->GetPopulationTECount() / popSize;
 
+			if(gen % 10 == 0){
+				std::cout << gen << "\t" << prerepTEs << "\t" << postrepTEs << "\t" << postexTEs << std::endl;
+			}
 			/// printing results after transposition
-			cerr << ".";
 			if (gen % sex_report_period == 0) {
-				cerr << endl;
 				pop->SummaryStatistics(detailed_out, gen);
 			}
 		}
 
 		delete pop;
-
+		std::cerr << "DONE!" << endl;
 	}
 
 	return 0;

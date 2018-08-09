@@ -307,16 +307,16 @@ void Population::SummaryStatistics(const char * fileName, int generation)
 	fractionFixed = (double)fixedSites / (double)vectorLength;
 
 	// OUTPUT TO SCREEN
-	std::cout << "GENERATION [" << generation << "]" << std::endl;
-	std::cout << "Mean copy number per individual: " << meanCopyNumber << std::endl;
-	std::cout << "Variance in copy number between individuals: " << varCopyNumber << std::endl;
-	std::cout << "Mean element frequency: " << meanFreq << std::endl;
-	std::cout << "Variance in element frequency: " << varFreq << std::endl;
-	std::cout << "Fraction of loci with zero frequency: " << fractionEmpty << std::endl;
-	std::cout << "Fraction of fixed loci: " << fractionFixed << std::endl;
-	std::cout << "Minimum copy number: " << minCopyNum << std::endl;
-	std::cout << "Minimum copy frequency: " << minCopyFreq << std::endl;
-	std::cout << std::endl;
+	// std::cout << "GENERATION [" << generation << "]" << std::endl;
+	// std::cout << "Mean copy number per individual: " << meanCopyNumber << std::endl;
+	// std::cout << "Variance in copy number between individuals: " << varCopyNumber << std::endl;
+	// std::cout << "Mean element frequency: " << meanFreq << std::endl;
+	// std::cout << "Variance in element frequency: " << varFreq << std::endl;
+	// std::cout << "Fraction of loci with zero frequency: " << fractionEmpty << std::endl;
+	// std::cout << "Fraction of fixed loci: " << fractionFixed << std::endl;
+	// std::cout << "Minimum copy number: " << minCopyNum << std::endl;
+	// std::cout << "Minimum copy frequency: " << minCopyFreq << std::endl;
+	// std::cout << std::endl;
 	// OUTPUT TO FILE
 
 	fout << generation << "\t" << meanCopyNumber << "\t" << varCopyNumber << "\t" << meanFreq << "\t";
