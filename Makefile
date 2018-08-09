@@ -12,19 +12,38 @@ ifndef INSTAL_PREFIX
     INSTAL_PREFIX = /usr/local
 endif
 
+# DEFAULT = classical build
+.PHONY : all
+all : build $(PRG)
+
+# TEST
+.PHONY : test
+test : build TEAscus_test
+	./TEAscus_test && rm TEAscus_test
+
+# INSTALL
+
+.PHONY : install
+install : $(PRG)
+	install -C $< $(INSTAL_PREFIX)/bin
+
+# CLEANING
+.PHONY : clean
+clean :
+	-rm -r $(PRG) build
+
 # BUILDING
 $(PRG) : build/main.o $(GIT_HEADER) $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(OBJ)
 
-build/%.o : src/%.cpp $(GIT_HEADER) build
+build/%.o : src/%.cpp $(GIT_HEADER)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-build/%.o : test/%.cpp $(GIT_HEADER) build
+build/%.o : test/%.cpp $(GIT_HEADER)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 build :
 	mkdir $@
-
 
 # .git/COMMIT_EDITMSG is a file that get updated with every commit
 # .git/HEAD is a file that get updated with every switch of branches
@@ -38,22 +57,7 @@ $(GIT_HEADER) : ../.git/modules/TEAscus/HEAD ../.git/modules/TEAscus/COMMIT_EDIT
 ../.git/modules/TEAscus/COMMIT_EDITMSG :
 	touch $@
 
-# TESTING
+# TESTING binary
 
 TEAscus_test : build/TEAscus_test.o $(OBJ) $(OBJ_TESTS)
 	gcc -o $@ $^ -lstdc++ -lcppunit -ldl -lm
-
-.PHONY : test
-test : TEAscus_test
-	./$< && rm $<
-
-# INSTALL
-
-.PHONY : install
-install : $(PRG)
-	install -C $< $(INSTAL_PREFIX)/bin
-
-# CLEANING
-.PHONY : clean
-clean :
-	-rm -r $(PRG) build
