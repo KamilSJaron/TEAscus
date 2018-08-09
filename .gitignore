@@ -1,4 +1,4 @@
-*.o
+build
 TEAscus
 TEAscus_test
 include/gitversion.h

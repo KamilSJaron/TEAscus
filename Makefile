@@ -6,19 +6,25 @@ GIT_HEADER = include/gitversion.h
 CPP_FILES = $(wildcard src/[A-Z]*.cpp)
 CPP_TEST_CLASSES = $(wildcard test/[A-Z]*.cpp)
 # TEST_FILES = $(wildcard test/*.cpp)
-OBJ = $(patsubst %.cpp, %.o, $(CPP_FILES))
-OBJ_TESTS = $(patsubst %.cpp, %.o, $(CPP_TEST_CLASSES))
+OBJ = $(patsubst src/%.cpp, build/%.o, $(CPP_FILES))
+OBJ_TESTS = $(patsubst test/%.cpp, build/%.o, $(CPP_TEST_CLASSES))
 ifndef INSTAL_PREFIX
     INSTAL_PREFIX = /usr/local
 endif
 
 # BUILDING
-
-$(PRG) : src/main.o $(GIT_HEADER) $(OBJ)
+$(PRG) : build/main.o $(GIT_HEADER) $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(OBJ)
 
-%.o : %.cpp $(GIT_HEADER)
+build/%.o : src/%.cpp $(GIT_HEADER) build
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
+
+build/%.o : test/%.cpp $(GIT_HEADER) build
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
+
+build :
+	mkdir $@
+
 
 # .git/COMMIT_EDITMSG is a file that get updated with every commit
 # .git/HEAD is a file that get updated with every switch of branches
@@ -34,7 +40,7 @@ $(GIT_HEADER) : ../.git/modules/TEAscus/HEAD ../.git/modules/TEAscus/COMMIT_EDIT
 
 # TESTING
 
-TEAscus_test : test/TEAscus_test.o $(OBJ) $(OBJ_TESTS)
+TEAscus_test : build/TEAscus_test.o $(OBJ) $(OBJ_TESTS)
 	gcc -o $@ $^ -lstdc++ -lcppunit -ldl -lm
 
 .PHONY : test
@@ -50,4 +56,4 @@ install : $(PRG)
 # CLEANING
 .PHONY : clean
 clean :
-	-rm $(PRG) src/*.o test/*.o
+	-rm -r $(PRG) build
