@@ -42,7 +42,7 @@ int main(int argc, char **argv){
 	int burnin = 20;
 	int index;
 	int c;
-	double prerepTEs = 0, postrepTEs = 0, postexTEs = 0;
+	double prerepTEs = 0, postrepTEs = 0;
 
 	opterr = 0;
 
@@ -183,10 +183,9 @@ int main(int argc, char **argv){
 			// cerr << "Transposon loss " << endl;
 			/// LOSS
 			pop->Exision();
-			postexTEs = (double)pop->GetPopulationTECount() / popSize;
 
 			if(gen % 10 == 0){
-				std::cout << gen << "\t" << prerepTEs << "\t" << postrepTEs << "\t" << postexTEs << std::endl;
+				std::cout << gen << "\t" << prerepTEs << "\t" << postrepTEs << std::endl;
 			}
 			/// printing results after transposition
 			if (gen % sex_report_period == 0) {
