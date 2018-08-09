@@ -22,7 +22,6 @@ test : build TEAscus_test
 	./TEAscus_test && rm TEAscus_test
 
 # INSTALL
-
 .PHONY : install
 install : $(PRG)
 	install -C $< $(INSTAL_PREFIX)/bin

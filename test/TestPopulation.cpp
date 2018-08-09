@@ -34,6 +34,26 @@ void TestPopulation::testSelectVitalIndividual(void) {
 	CPPUNIT_ASSERT(selected_ind >= 0 && selected_ind <= 19);
 }
 
+void TestPopulation::testGenerateOffspring(void) {
+	// std::cerr << std::endl << "u_meiosis: " << Genome::u_meiosis << std::endl;
+	Genome::u_meiosis = 0.1;
+	int popSize = pop->GetPopSize();
+	int pre_sex_TEs = pop->GetPopulationTECount();
+	Population * newPopulation = new Population(popSize);
+
+	Genome parent1(pop->GetIndividual(pop->SelectVitalIndividual()));
+	Genome parent2(pop->GetIndividual(pop->SelectVitalIndividual()));
+
+	// std::cerr << std::endl << "Pre-sex TEs:  " << pop->GetPopulationTECount() << std::endl;
+	for(int i = 0; i < popSize; i++){
+		pop->generateOffspring(i, newPopulation, parent1, parent2);
+	}
+	// std::cerr << "Post-sex TEs: " << newPopulation->GetPopulationTECount() << std::endl;;
+	Genome::u_meiosis = 0.0005;
+
+	CPPUNIT_ASSERT(newPopulation->GetPopulationTECount() > pre_sex_TEs);
+}
+
 void TestPopulation::testSexualReproduction(void) {
 	Population * temp;
 	for( int i = 0; i < 100; i++){

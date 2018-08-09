@@ -38,6 +38,8 @@ public:
 	void MitoticTransposition();
 	// void MeioticTransposition(Genome &);
 	void Exision();
+	/// sexual offpring - fusion of parents, recombination, creation of two complementary offsprings
+	void generateOffspring(int ind, Population * newPopulation, Genome parent1, Genome parent2);
 
 	void ListPopulationSites() const;
 	void SaveParameters(const char *);
@@ -60,8 +62,6 @@ private:
 
 
 	int getTransposonPosition(Transposon *) const;
-	/// sexual offpring - fusion of parents, recombination, creation of two complementary offsprings
-	void generateOffspring(int ind, Population * newPopulation, Genome parent1, Genome parent2);
 };
 
 
