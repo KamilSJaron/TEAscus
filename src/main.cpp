@@ -42,7 +42,7 @@ int main(int argc, char **argv){
 	int burnin = 20;
 	int index;
 	int c;
-	double prerepTEs = 0, postrepTEs = 0;
+	double prerepTEs = 0, postrepTEs = 0, modifier_freq = 0;
 
 	opterr = 0;
 
@@ -130,9 +130,11 @@ int main(int argc, char **argv){
 			char tempChar[100];
 			fin.getline(tempChar,100);
 			N=strtol(tempChar,0,10);
+			fin.getline(tempChar,100);
+			modifier_freq=strtod(tempChar,0);
 		fin.close();
 
-		Population * pop = new Population(N);
+		Population * pop = new Population(N, modifier_freq);
 		// cerr << "Population created" << endl;
 		Population * new_population;
 
@@ -185,7 +187,7 @@ int main(int argc, char **argv){
 			pop->Exision();
 
 			if(gen % 10 == 0){
-				std::cout << gen << "\t" << prerepTEs << "\t" << postrepTEs << std::endl;
+				std::cout << gen << "\t" << prerepTEs << "\t" << postrepTEs << "\t" << pop->GetModifierFrequency() << std::endl;
 			}
 			/// printing results after transposition
 			if (gen % sex_report_period == 0) {

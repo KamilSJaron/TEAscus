@@ -22,9 +22,10 @@
 std::random_device Population::rd;
 std::mt19937 Population::mt(Population::rd());
 
-Population::Population(int size)
+Population::Population(int size, double freq)
 {
 	popSize = size;
+	initModifierFrequecy = freq;
 	genoVector.resize(popSize);
 	rind = std::uniform_int_distribution<int>(0, popSize - 1);
 	runif = std::uniform_real_distribution<double>(0.0,1.0);
@@ -67,6 +68,15 @@ double Population::GetPopulationMeanFitness() const
 	return populationFitness;
 }
 
+double Population::GetModifierFrequency() {
+	double modifier_freq = 0.0;
+	for (int i=0; i < popSize; i++)
+		modifier_freq += GetIndividual(i).GetModifier();
+	modifier_freq /= (double)popSize;
+	return modifier_freq;
+}
+
+
 void Population::Initialize() {
 	int rolled_chromosome = 0, rolled_position_on_ch = 0;
 	int totalLength = Genome::chromLength * Genome::numberOfChromosomes;
@@ -90,6 +100,10 @@ void Population::Initialize() {
 
 	/// copy individual 0 to all other individuals
 	for (int a=1; a < popSize; a++) {
+		/// initiate certain proportion of individuals with the modifier
+		if ( a <= round(popSize * initModifierFrequecy) ){
+			GetIndividual(a).SetModifierOn();
+		}
 		for (int i=1; i <= Genome::numberOfChromosomes; i++) {
 			Transposon * current = GetIndividual(0).GetChromosome(i).GetHeadTransposon();
 
@@ -125,7 +139,7 @@ void Population::DeleteIndividual(int x) {
 }
 
 Population * Population::SexualReproduction() {
-	Population * newPopulation = new Population(popSize);
+	Population * newPopulation = new Population(popSize, initModifierFrequecy);
 
 	for (int ind = 0; ind < popSize; ind++) {
 		/// selecting parents for ind
@@ -139,12 +153,15 @@ Population * Population::SexualReproduction() {
 }
 
 Population * Population::AsexualReproduction() {
-	Population * newPopulation = new Population(popSize);
+	Population * newPopulation = new Population(popSize, initModifierFrequecy);
 
 	for (int a=0; a < popSize; a++) {
 		// std::cerr << "Creating with ind " << a << " from pop of " << popSize << " individuals." << std::endl;
 		/// taking selected individual : ind
 		Genome parent(GetIndividual(SelectVitalIndividual()));
+		if ( parent.GetModifier() == 1 ){
+			newPopulation->GetIndividual(a).SetModifierOn();
+		}
 
 		/// not entiraly sure what this bit does
 		for (int i=1; i <= Genome::numberOfChromosomes; i++) {
@@ -194,7 +211,8 @@ void Population::SaveParameters(const char * fileName) {
 	fout << "N = " << popSize << "\n";
 	fout 	<< "u_mitosis = " << Genome::u_mitosis
 			<< ", u_meiosis = " << Genome::u_meiosis
-			<< ", v = " << Genome::vt << "\n";
+			<< ", v_base = " << Genome::v_base
+			<< ", v_modified = " << Genome::v_modified << "\n";
 	fout << "initialTE = " << Genome::initialTE << "\n";
 	fout << "a = " << Genome::sa << ", b = " << Genome::sb << "\n";
 	fout << "chrom# = " << Genome::numberOfChromosomes << ", ploidy# = haploid\n" << "\n";
@@ -217,8 +235,10 @@ void Population::PrintParameters(){
 	std::cerr << "Population Size = " << popSize << std::endl;
 	std::cerr << "Transposition Rate during mitosis = " << Genome::u_mitosis << std::endl;
 	std::cerr << "Transposition Rate during meiosis = " << Genome::u_meiosis << std::endl;
-	std::cerr << "Excision Rate = " << Genome::vt << std::endl;
+	std::cerr << "Base excision Rate = " << Genome::v_base << std::endl;
+	std::cerr << "Modified excision Rate = " << Genome::v_modified << std::endl;
 	std::cerr << "Initial TE count = " << Genome::initialTE << std::endl;
+	std::cerr << "Initial frequency of modifier = " << initModifierFrequecy << std::endl;
 	std::cerr << "Selection parameters, a = " << Genome::sa << ", b = " << Genome::sb << std::endl;
 	std::cerr << "Number of chromosomes = " << Genome::numberOfChromosomes << ". Ploidy = haploid" << std::endl << std::endl;
 }
@@ -595,7 +615,7 @@ void Population::generateOffspring(int ind,
 
 	int ascus_init_TEs = parent1.GetGenomeTECount() + parent2.GetGenomeTECount();
 	/// generate new TEs as transposition rate (so far u) and number of TEs in ascus
-	int new_TEs_in_ascus = random.Poisson(Genome::u_meiosis * ascus_init_TEs);
+	int new_TEs_in_ascus = random.Binomial(ascus_init_TEs, Genome::u_meiosis);
 	/// Right now it places TE with 50% probability to one of the backgrounds
 	for (int new_TE = 0; new_TE < new_TEs_in_ascus; new_TE++){
 		if ( random.TossACoin() ){
@@ -604,6 +624,16 @@ void Population::generateOffspring(int ind,
 			parent2.insertTE();
 		}
 	}
+
+	/// inheritance of exision modifier
+	if ( random.TossACoin() ){
+		if ( parent1.GetModifier() == 1 ) {
+			newPopulation->GetIndividual(ind).SetModifierOn();
+		}
+	} else if ( parent2.GetModifier() == 1 ) {
+		newPopulation->GetIndividual(ind).SetModifierOn();
+	}
+
 	/// TRANSPOSE WITHING ASCUS
 
 	/// every chromosome will be rocombined separatedly

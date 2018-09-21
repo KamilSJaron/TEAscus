@@ -53,3 +53,8 @@ int Random::Poisson(double lambda){
 	std::poisson_distribution<int> rpois(lambda);
 	return(rpois(Random::mt));
 }
+
+int Random::Binomial(int count, double prob){
+	std::binomial_distribution<int> rbin(count, prob);
+	return(rbin(Random::mt));
+}

@@ -41,10 +41,12 @@ The rest of parameters are loaded from file `input.txt`
 Line 1: N (population size)
 Line 2: u_mitosis (transposition rate during mitosis u - asexual)
 Line 3: u_meiosis (transposition rate during meiosis u - sexual)
-Line 4: vt (excision rate v)
-Line 5: sa (a, selection parameter)
-Line 6: sb (b, synergism within family selection parameter)
-Line 7: n_0 (number of TEs at the beginning)
+Line 4: v_base (non modified excision rate v)
+Line 5: v_modified (exision rate boosted by modifier)
+Line 6: sa (a, selection parameter)
+Line 7: sb (b, synergism within family selection parameter)
+Line 8: n_0 (number of TEs at the beginning)
+Line 9: mod_init (initial frequency of the modifier in the population)
 ```
 
 ### Details of simulation

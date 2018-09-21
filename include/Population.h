@@ -20,7 +20,7 @@
 class Population {
 
 public:
-	Population(int);
+	Population(int, double);
 	~Population();
 
 	Genome & GetIndividual(int);
@@ -28,6 +28,7 @@ public:
 	int GetPopSize() const;
 	unsigned int GetPopulationTECount() const;
 	double GetPopulationMeanFitness() const;
+	double GetModifierFrequency();
 
 	void Initialize();
 	int SelectVitalIndividual();
@@ -53,6 +54,7 @@ public:
 private:
 	std::vector<Genome> genoVector;
 	int popSize;
+	double initModifierFrequecy;
 	std::uniform_int_distribution<int> rind;
 	std::uniform_real_distribution<double> runif;
 

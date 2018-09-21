@@ -34,6 +34,8 @@ public:
 	double GetGenomeFitness(int) const;
 
 	void SetChromosome(Chromosome&);
+	void SetModifierOn();
+	int GetModifier() { return modifier; } ;
 
 	void insertTE();
 	void MitoticTranspose();
@@ -53,7 +55,8 @@ public:
 	static double sb;				// selection coefficient beta under synergistic epistasis
 	static double u_mitosis;		// transposition rate for mitosis
 	static double u_meiosis;		// transposition rate for meiosis
-	static double vt;				// rate of element loss
+	static double v_base;			// rate of element loss
+	static double v_modified;
 	//static double rGenome;		// genome wide recombination rate between TE sites
 	static int initialTE;
 	const static int numberOfChromosomes;
@@ -66,6 +69,7 @@ private:
 	Random random;
 
 	std::vector<Chromosome> chromoVector;
+	int modifier;
 
 };
 

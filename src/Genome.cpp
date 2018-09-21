@@ -23,7 +23,8 @@
 //int Genome::N = 0;
 double Genome::u_mitosis = 0;
 double Genome::u_meiosis = 0;
-double Genome::vt = 0;
+double Genome::v_base = 0;
+double Genome::v_modified = 0;
 double Genome::sa = 0;
 double Genome::sb = 0;
 int Genome::initialTE = 0;
@@ -44,14 +45,17 @@ void Genome::SetParameters() {
 		{std::cout << "Error opening file"; exit (1); }
 
 	char tempChar[100];
-	// remove line with number of individuals
+	// remove line with number of individuals & frequency of the general modifier
+	fin.getline(tempChar,100);
 	fin.getline(tempChar,100);
 	fin.getline(tempChar,100);
 	u_mitosis=strtod(tempChar,0);
 	fin.getline(tempChar,100);
 	u_meiosis=strtod(tempChar,0);
 	fin.getline(tempChar,100);
-	vt=strtod(tempChar,0);
+	v_base=strtod(tempChar,0);
+	fin.getline(tempChar,100);
+	v_modified=strtod(tempChar,0);
 	fin.getline(tempChar,100);
 	sa=strtod(tempChar,0);
 	fin.getline(tempChar,100);
@@ -69,6 +73,7 @@ Genome::Genome() {
 		SetParameters();
 
 	random = Random();
+	modifier = 0;
 	for (int i=1; i <= numberOfChromosomes; i++) {
 		chromoVector.at(i-1).SetChromNumber(i);
 	}
@@ -80,6 +85,7 @@ Genome::Genome(const Genome & rhs) {
 	if (!parametersSet)
 		SetParameters();
 
+	modifier = rhs.modifier;
 	Transposon * current;
 
 	for (int i=1; i <= numberOfChromosomes; i++){
@@ -133,6 +139,10 @@ void Genome::SetChromosome(Chromosome & c) {
 	chromoVector.at(num - 1) = c;
 }
 
+void Genome::SetModifierOn(){
+	modifier = 1;
+}
+
 void Genome::insertTE() {
 	int rolled_chromosome = 0, rolled_position_on_ch = 0;
 	bool roll_again = true;
@@ -152,7 +162,7 @@ void Genome::MitoticTranspose() {
 
 	int TEs = GetGenomeTECount();
 	/// roll how many new transposons will be generated
-	int transposeCount = random.Poisson(u_mitosis * TEs);
+	int transposeCount = random.Binomial(TEs, u_mitosis);
 	TEs += transposeCount;
 	// std::cerr << "TEs: " << TEs << std::endl;
 	// std::cerr << "totalLength: " << (double)totalLength << std::endl;
@@ -171,7 +181,7 @@ void Genome::MitoticTranspose() {
 }
 
 void Genome::ElementLoss() {
-	if (vt == 0){
+	if (v_base == 0){
 		return;
 	}
 
@@ -181,8 +191,11 @@ void Genome::ElementLoss() {
 
 	for (int i=1; i <= numberOfChromosomes; i++) {
 		chromTEcount = chromoVector.at(i-1).GetChromTECount();
-		lossCount = random.Poisson(vt*chromTEcount);
-		// lossCount = (int)rand.Poisson(vt*chromTEcount);
+		if ( modifier == 0 ){
+			lossCount = random.Binomial(chromTEcount, v_base);
+		} else {
+			lossCount = random.Binomial(chromTEcount, v_modified);
+		}
 
 		/// if by any chance poisson distribution generates number greater than number of TEs
 		if (lossCount > chromTEcount) {

@@ -29,6 +29,7 @@ public:
 	int TossACoin();
 	int randomTE(int te_number);
 	int Poisson(double lambda);
+	int Binomial(int count, double prob);
 
 private:
 
