@@ -12,7 +12,7 @@ using namespace std;
 void TestPopulation::setUp(void) {
 	Genome::initialTE = 3;
 	Genome::u_mitosis = 0.001;
-	pop = new Population(20);
+	pop = new Population(20, 0.2);
 	pop->Initialize();
 }
 
@@ -39,7 +39,7 @@ void TestPopulation::testGenerateOffspring(void) {
 	Genome::u_meiosis = 0.1;
 	int popSize = pop->GetPopSize();
 	int pre_sex_TEs = pop->GetPopulationTECount();
-	Population * newPopulation = new Population(popSize);
+	Population * newPopulation = new Population(popSize, 0.3);
 
 	Genome parent1(pop->GetIndividual(pop->SelectVitalIndividual()));
 	Genome parent2(pop->GetIndividual(pop->SelectVitalIndividual()));
