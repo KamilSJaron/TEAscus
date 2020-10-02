@@ -2,10 +2,12 @@
 
 Transposable element simulator of haploid yeast with sexual reproduction though ascus.
 
+This simulator is intended as a submodule of a different repository (yeast_TE_load_prediction) and the installation is designed as such. Follow please the following steps to get it running.
+
 ### Installation
 
 ```
-git clone https://github.com/KamilSJaron/yeast_TE_load_prediction
+git clone --recursive https://github.com/KamilSJaron/yeast_TE_load_prediction
 cd yeast_TE_load_prediction/TEAscus
 make
 # make test
